@@ -1,0 +1,13 @@
+package com.jjrising.bingo;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class JudgementBingoApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}

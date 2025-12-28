@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:18.1-bookworm
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DATABASE: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    networks:
+      - bingo
+
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bingo-app
+    depends_on:
+      - db
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    networks:
+      - bingo
+
+volumes:
+  postgres_data:
+
+networks:
+  bingo:

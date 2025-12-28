@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: Judgement Bingo
+  datasource:
+    url: "jdbc:postgresql://db:5432/bingo"
+    username: bingo
+    password: local

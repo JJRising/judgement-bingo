@@ -23,5 +23,8 @@
 hs_err_pid*
 replay_pid*
 
+backend/.gradle
+backend/build
+
 # IDE
 .idea

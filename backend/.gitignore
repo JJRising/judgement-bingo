@@ -1,2 +1,5 @@
 build
 .gradle
+
+# ingore the deployed UI resources
+src/main/resources/static/*

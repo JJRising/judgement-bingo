@@ -10,7 +10,6 @@ RUN ./gradlew --no-daemon dependencies
 
 COPY src src
 RUN ./gradlew --no-daemon bootJar
-RUN ls -lh /build/build/libs
 
 FROM eclipse-temurin:25.0.1_8-jre-alpine-3.23
 

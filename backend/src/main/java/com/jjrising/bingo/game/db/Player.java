@@ -21,7 +21,7 @@ public class Player {
     private Game game;
 
     @Column(nullable = false)
-    private String display_name;
+    private String displayName;
 
     @PrePersist
     private void prePersist() {

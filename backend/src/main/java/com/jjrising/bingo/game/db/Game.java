@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -25,19 +27,34 @@ public class Game {
     private Status status;
 
     @Column(nullable = false)
-    private Instant created_at;
+    private Instant createdAt;
 
-    private Instant game_phase_start_at;
+    private Instant gamePhaseStartAt;
 
-    private Instant game_closed_at;
+    private Instant gameClosedAt;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<Player> players = new HashSet<>();
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<Subject> subjects = new HashSet<>();
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<Prompt> prompts = new HashSet<>();
+
+    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    private KeyHierarchy keyHierarchy;
 
     @PrePersist
     private void prePersist() {
         if (id == null) {
             id = UUID.randomUUID();
         }
-        if (created_at == null) {
-            created_at = Instant.now();
+        if (createdAt == null) {
+            createdAt = Instant.now();
         }
     }
 

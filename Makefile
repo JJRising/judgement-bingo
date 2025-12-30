@@ -30,3 +30,6 @@ docker-build:
 
 up: ui-deploy docker-build
 	docker compose up -d
+
+quick-up: docker-build
+	docker compose up -d

@@ -5,3 +5,22 @@ spring:
     url: "jdbc:postgresql://db:5432/bingo"
     username: bingo
     password: local
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # issuer should match the location of the idp, but since the keycloak is running in docker with the app, the
+          # domain is the matching docker naming. So this is just for the local architecture.
+          issuer-uri: http://localhost:8089/realms/local
+          jwk-set-uri: http://idp:8080/realms/local/protocol/openid-connect/certs
+
+bingo:
+  security:
+    identity-providers:
+      issuers:
+        - issuer: http://localhost:8089/realms/local
+          provider: KEYCLOAK
+
+logging:
+  level:
+    root: debug

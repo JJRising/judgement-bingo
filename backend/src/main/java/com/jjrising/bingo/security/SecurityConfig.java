@@ -1,5 +1,6 @@
-package com.jjrising.bingo.auth;
+package com.jjrising.bingo.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,7 +10,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final AppUserJwtAuthenticationConverter appUserJwtAuthenticationConverter;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) {
@@ -26,7 +30,10 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
-                );
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {
+                    jwt.jwtAuthenticationConverter(appUserJwtAuthenticationConverter);
+                }));
 
         return http.build();
     }

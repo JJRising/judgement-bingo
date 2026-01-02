@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 import java.util.Collection;
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface SubjectMapper {
 
     @Mapping(target = "type", source = "type")

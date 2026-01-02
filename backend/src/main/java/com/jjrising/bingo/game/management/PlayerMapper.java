@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import java.util.Collection;
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface PlayerMapper {
 
     PlayerDto toDto(Player player);

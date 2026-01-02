@@ -13,6 +13,19 @@ services:
     networks:
       - bingo
 
+  idp:
+    image: quay.io/keycloak/keycloak:26.2.5
+    command: start-dev --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8089:8080"
+    volumes:
+      - .local_config/keycloak/config:/opt/keycloak/data/import
+    networks:
+      - bingo
+
   app:
     build:
       context: ./backend

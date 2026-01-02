@@ -1,5 +1,6 @@
 package com.jjrising.bingo.game.db;
 
+import com.jjrising.bingo.security.db.AppUser;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,8 +24,15 @@ public class Player {
     @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 
-    @Column(nullable = false)
+    @Column
     private String displayName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private AppUser user;
+
+    @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Subject subject;
 
     @PrePersist
     private void prePersist() {

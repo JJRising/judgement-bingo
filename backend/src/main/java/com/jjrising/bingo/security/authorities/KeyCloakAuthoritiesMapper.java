@@ -1,6 +1,6 @@
 package com.jjrising.bingo.security.authorities;
 
-import com.jjrising.bingo.security.IdentityProviderType;
+import com.jjrising.bingo.security.auth.IdentityProviderType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;

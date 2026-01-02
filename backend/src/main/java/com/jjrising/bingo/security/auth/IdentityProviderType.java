@@ -1,4 +1,4 @@
-package com.jjrising.bingo.security;
+package com.jjrising.bingo.security.auth;
 
 public enum IdentityProviderType {
     KEYCLOAK,

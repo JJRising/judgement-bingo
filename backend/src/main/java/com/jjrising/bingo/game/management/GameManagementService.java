@@ -5,6 +5,8 @@ import com.jjrising.bingo.encryption.KeyHierarchyTree;
 import com.jjrising.bingo.exceptions.InvalidGameException;
 import com.jjrising.bingo.exceptions.InvalidOperation;
 import com.jjrising.bingo.game.db.*;
+import com.jjrising.bingo.security.db.AppUser;
+import com.jjrising.bingo.security.db.AppUserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -18,11 +20,11 @@ import java.util.UUID;
 public class GameManagementService {
 
     private final GameRepository gameRepository;
+    private final AppUserRepository appUserRepository;
 
     public Game createGame(String name) {
         Game game = Game.builder().name(name).status(Game.Status.SETUP).build();
-        gameRepository.save(game);
-        return game;
+        return gameRepository.save(game);
     }
 
     public List<Game> getGames() {
@@ -33,24 +35,24 @@ public class GameManagementService {
         return gameRepository.getReferenceById(gameId);
     }
 
-    public Player addPlayerToGame(UUID gameId, String displayName) throws InvalidOperation {
+    public Player addPlayerToGame(UUID gameId, UUID userId) throws InvalidOperation {
         Game game = getGameForSetup(gameId);
-        Player player = Player.builder().game(game).displayName(displayName).build();
+        AppUser appUser = appUserRepository.getReferenceById(userId);
+        Player player = Player.builder().game(game).user(appUser).build();
         game.getPlayers().add(player);
 
         // All players are also subjects
         Subject subject = Subject.builder().game(game).type(Subject.Type.PLAYER).player(player).build();
-        gameRepository.save(game);
-        return player;
+        game.getSubjects().add(subject);
+        game = gameRepository.save(game);
+        // We'll have to go fetch the new persisted model to return with the new id
+        return game.getPlayers().stream().filter(p -> p.getUser().getId().equals(userId)).findFirst().orElseThrow();
     }
 
     public void removePlayer(UUID gameId, UUID playerId) throws InvalidOperation {
         Game game = getGameForSetup(gameId);
         Optional<Player> player = game.getPlayers().stream().filter(p -> p.getId().equals(playerId)).findFirst();
-        if (player.isPresent()) {
-            game.getPlayers().remove(player.get());
-            game.getSubjects().removeIf(s -> s.getPlayer().equals(player.get()));
-        }
+        player.ifPresent(value -> game.getPlayers().remove(value));
         gameRepository.save(game);
     }
 
@@ -88,8 +90,7 @@ public class GameManagementService {
         game.setKeyHierarchy(keyHierarchy);
 
         game.setStatus(Game.Status.PROMPTS);
-        gameRepository.save(game);
-        return game;
+        return gameRepository.save(game);
     }
 
     private Game getGameForSetup(UUID gameId) throws InvalidOperation {

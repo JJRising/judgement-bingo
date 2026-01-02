@@ -43,6 +43,7 @@
       "username": "admin",
       "enabled": true,
       "emailVerified": true,
+      "email": "admin.user@local.local",
       "firstName": "Admin",
       "lastName": "User",
       "credentials": [
@@ -60,6 +61,10 @@
     {
       "username": "user1",
       "enabled": true,
+      "emailVerified": true,
+      "email": "user1@local.local",
+      "firstName": "One",
+      "lastName": "User",
       "credentials": [
         {
           "type": "password",
@@ -74,6 +79,10 @@
     {
       "username": "user2",
       "enabled": true,
+      "emailVerified": true,
+      "email": "user2@local.local",
+      "firstName": "Two",
+      "lastName": "User",
       "credentials": [
         {
           "type": "password",
@@ -88,6 +97,10 @@
     {
       "username": "user3",
       "enabled": true,
+      "emailVerified": true,
+      "email": "user3@local.local",
+      "firstName": "Three",
+      "lastName": "User",
       "credentials": [
         {
           "type": "password",
@@ -102,6 +115,10 @@
     {
       "username": "user4",
       "enabled": true,
+      "emailVerified": true,
+      "email": "user4@local.local",
+      "firstName": "Four",
+      "lastName": "User",
       "credentials": [
         {
           "type": "password",
@@ -116,6 +133,10 @@
     {
       "username": "user5",
       "enabled": true,
+      "emailVerified": true,
+      "email": "user5@local.local",
+      "firstName": "Five",
+      "lastName": "User",
       "credentials": [
         {
           "type": "password",
@@ -130,6 +151,10 @@
     {
       "username": "user6",
       "enabled": true,
+      "emailVerified": true,
+      "email": "user6@local.local",
+      "firstName": "Six",
+      "lastName": "User",
       "credentials": [
         {
           "type": "password",
@@ -144,6 +169,10 @@
     {
       "username": "user7",
       "enabled": true,
+      "emailVerified": true,
+      "email": "user7@local.local",
+      "firstName": "Seven",
+      "lastName": "User",
       "credentials": [
         {
           "type": "password",
@@ -158,6 +187,10 @@
     {
       "username": "user8",
       "enabled": true,
+      "emailVerified": true,
+      "email": "user8@local.local",
+      "firstName": "Eight",
+      "lastName": "User",
       "credentials": [
         {
           "type": "password",
@@ -172,6 +205,10 @@
     {
       "username": "user9",
       "enabled": true,
+      "emailVerified": true,
+      "email": "user9@local.local",
+      "firstName": "Nine",
+      "lastName": "User",
       "credentials": [
         {
           "type": "password",
@@ -186,6 +223,10 @@
     {
       "username": "user10",
       "enabled": true,
+      "emailVerified": true,
+      "email": "user10@local.local",
+      "firstName": "Ten",
+      "lastName": "User",
       "credentials": [
         {
           "type": "password",

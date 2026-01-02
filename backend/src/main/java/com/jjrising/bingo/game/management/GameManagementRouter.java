@@ -64,7 +64,7 @@ public class GameManagementRouter {
     @PostMapping("/{gameId}/players")
     @PreAuthorize("hasRole('ADMIN')")
     public PlayerDto addPlayer(@PathVariable UUID gameId, @RequestBody @Valid PlayerRequest playerRequest) throws InvalidOperation {
-        Player player = gameManagementService.addPlayerToGame(gameId, playerRequest.displayName());
+        Player player = gameManagementService.addPlayerToGame(gameId, playerRequest.userId());
         return playerMapper.toDto(player);
     }
 

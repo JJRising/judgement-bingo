@@ -24,9 +24,9 @@ public interface SubjectMapper {
 
         return switch (subject.getType()) {
             case EXTERNAL -> subject.getLabel();
-            case PLAYER -> subject.getPlayer() != null
+            case PLAYER -> subject.getPlayer().getDisplayName() != null
                     ? subject.getPlayer().getDisplayName()
-                    : null;
+                    : subject.getPlayer().getUser().getInviteName();
         };
     }
 }

@@ -1,8 +1,10 @@
 package com.jjrising.bingo.game.management.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.UUID;
 
 public record PlayerRequest(
-        @NotBlank String displayName
+        @NotNull UUID userId
 ) {
 }

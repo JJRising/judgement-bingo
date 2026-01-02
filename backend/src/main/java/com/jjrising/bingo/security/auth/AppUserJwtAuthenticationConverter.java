@@ -1,4 +1,4 @@
-package com.jjrising.bingo.security;
+package com.jjrising.bingo.security.auth;
 
 import com.jjrising.bingo.security.authorities.AuthoritiesMapper;
 import com.jjrising.bingo.security.db.AppUser;

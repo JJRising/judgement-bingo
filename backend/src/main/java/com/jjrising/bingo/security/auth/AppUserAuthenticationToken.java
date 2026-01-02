@@ -1,4 +1,4 @@
-package com.jjrising.bingo.security;
+package com.jjrising.bingo.security.auth;
 
 import com.jjrising.bingo.security.db.AppUser;
 import org.springframework.security.authentication.AbstractAuthenticationToken;

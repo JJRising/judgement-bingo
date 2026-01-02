@@ -1,17 +1,16 @@
 package com.jjrising.bingo.security.db;
 
-import com.jjrising.bingo.security.IdentityProviderType;
+import com.jjrising.bingo.security.auth.IdentityProviderType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,21 +18,21 @@ public class AppUser {
 
     @Id
     @Column(nullable = false, updatable = false)
+    @EqualsAndHashCode.Include
     private UUID id;
 
-    @Column(name = "identity_provider", nullable = false)
+    @Column(name = "identity_provider")
     @Enumerated(EnumType.STRING)
     private IdentityProviderType identityProviderType;
 
-    @Column(nullable = false)
+    @Column
     private String externalSubjectId;
 
     @Column(nullable = false)
-    private String email;
+    private String inviteName;
 
     @Column(nullable = false)
-    @Builder.Default
-    private boolean emailVerified = false;
+    private String email;
 
     @Column(nullable = false)
     private Instant created_at;

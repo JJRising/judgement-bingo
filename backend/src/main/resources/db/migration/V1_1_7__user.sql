@@ -1,10 +1,10 @@
 CREATE TABLE app_user
 (
     id                  UUID PRIMARY KEY,
-    identity_provider   TEXT        NOT NULL,
-    external_subject_id TEXT        NOT NULL,
+    identity_provider   TEXT,
+    external_subject_id TEXT,
+    invite_name         TEXT        NOT NULL,
     email               TEXT        NOT NULL,
-    email_verified      BOOLEAN     NOT NULL,
     created_at          TIMESTAMPTZ NOT NULL,
     disabled_at         TIMESTAMPTZ,
 

@@ -1,10 +1,12 @@
-package com.jjrising.bingo.security;
+package com.jjrising.bingo.security.auth;
 
 import com.jjrising.bingo.security.db.AppUser;
 import com.jjrising.bingo.security.db.AppUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,24 +26,24 @@ public class AppUserResolver {
         String email = jwt.getClaimAsString("email");
         Boolean emailVerified = jwt.getClaimAsBoolean("email_verified");
 
+        if (!emailVerified) {
+            throw new RuntimeException("unverified email");
+        }
+
         return appUserRepository.findByIdentityProviderTypeAndExternalSubjectId(identityProviderType, subject)
-                .orElseGet(() -> createUser(identityProviderType, subject, email, emailVerified));
+                .orElseGet(() -> resolveByEmail(identityProviderType, subject, email));
     }
 
-    private AppUser createUser(
-            IdentityProviderType provider,
-            String subject,
-            String email,
-            Boolean emailVerified
-    ) {
-        AppUser user = AppUser.builder()
-                .identityProviderType(provider)
-                .externalSubjectId(subject)
-                .email(email)
-                .emailVerified(Boolean.TRUE.equals(emailVerified))
-                .build();
-
-        return appUserRepository.save(user);
+    private AppUser resolveByEmail(IdentityProviderType identityProviderType, String subject, String email) {
+        Optional<AppUser> appUserOptional = appUserRepository.findByEmailAndIdentityProviderTypeIsNull(email);
+        if (appUserOptional.isPresent()) {
+            AppUser appUser = appUserOptional.get();
+            appUser.setIdentityProviderType(identityProviderType);
+            appUser.setExternalSubjectId(subject);
+            return appUserRepository.save(appUser);
+        } else {
+            throw new RuntimeException("User not found");
+        }
     }
 
     IdentityProviderType resolveIdentityProvider(String issuer) {

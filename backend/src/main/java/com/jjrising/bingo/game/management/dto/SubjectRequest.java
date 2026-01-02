@@ -1,6 +1,8 @@
 package com.jjrising.bingo.game.management.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record SubjectRequest(
-        String label
+        @NotBlank String label
 ) {
 }

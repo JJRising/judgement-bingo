@@ -1,10 +1,6 @@
 package com.jjrising.bingo.game.prompts;
 
-import com.jjrising.bingo.game.db.Game;
 import com.jjrising.bingo.game.db.Prompt;
-import com.jjrising.bingo.game.management.GameManagementService;
-import com.jjrising.bingo.game.management.dto.GameDto;
-import com.jjrising.bingo.game.management.dto.GameRequest;
 import com.jjrising.bingo.game.prompts.dto.PromptDto;
 import com.jjrising.bingo.game.prompts.dto.PromptRequest;
 import jakarta.validation.Valid;

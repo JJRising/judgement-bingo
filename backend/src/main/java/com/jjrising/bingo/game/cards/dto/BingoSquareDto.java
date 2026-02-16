@@ -5,6 +5,6 @@ import com.jjrising.bingo.game.db.Prompt;
 public record BingoSquareDto(
         String subject,
         String text,
-        Prompt.Status status
+        String status
 ) {
 }

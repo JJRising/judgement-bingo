@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public record BingoCardDto(
-        UUID id,
         UUID playerId,
         String playerName,
         Map<Integer, BingoSquareDto> squares

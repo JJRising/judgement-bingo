@@ -8,6 +8,7 @@ public record PromptDto(
         UUID subjectId,
         String subjectName,
         String text,
+        String status,
         UUID createdBy,
         String createdByName,
         UUID approvedBy,

@@ -149,6 +149,7 @@ export interface PromptDto {
     subjectId: string;
     subjectName: string;
     text: string;
+    status: "SUBMITTED" | "ACCEPTED" | "REVEALED";
     createdBy: string;
     createdByName: string;
     approvedBy: string | null;
@@ -183,5 +184,41 @@ export async function deletePrompt(gameId: string, promptId: string): Promise<vo
         method: "DELETE",
     });
     if (!res.ok) throw new Error("Failed to delete prompt");
+}
+
+// Bingo Cards API
+export interface BingoSquareDto {
+    subject: string;
+    text: string;
+    status: "SUBMITTED" | "ACCEPTED" | "REVEALED";
+}
+
+export interface BingoCardDto {
+    id: string;
+    playerId: string;
+    playerName: string;
+    squares: Record<number, BingoSquareDto> | null;
+}
+
+export async function fetchBingoCards(gameId: string): Promise<BingoCardDto[]> {
+    const res = await authFetch(`/api/v1/games/${gameId}/cards`);
+    if (!res.ok) throw new Error("Failed to fetch bingo cards");
+    return res.json();
+}
+
+export async function fetchMyBingoCard(gameId: string): Promise<BingoCardDto> {
+    const res = await authFetch(`/api/v1/games/${gameId}/cards/me`);
+    if (!res.ok) throw new Error("Failed to fetch my bingo card");
+    return res.json();
+}
+
+export async function updateBingoCard(gameId: string, prompts: Record<number, string>): Promise<BingoCardDto> {
+    const res = await authFetch(`/api/v1/games/${gameId}/cards/me`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompts }),
+    });
+    if (!res.ok) throw new Error("Failed to update bingo card");
+    return res.json();
 }
 

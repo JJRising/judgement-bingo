@@ -3,7 +3,8 @@ import { HomePage } from "./pages/HomePage";
 import { GameLayout } from "./pages/game/GameLayout";
 import { ManagementPage } from "./pages/game/ManagementPage";
 import { PromptsPage } from "./pages/game/PromptsPage";
-import { ComingSoon } from "./pages/game/ComingSoon";
+import { MyBingoCardPage } from "./pages/game/MyBingoCardPage";
+import { OthersCardsPage } from "./pages/game/OthersCardsPage";
 import { hasRole } from "./auth";
 
 function RequireAdmin({ children }: { children: React.ReactNode }) {
@@ -31,8 +32,8 @@ export default function App() {
                         }
                     />
                     <Route path="prompts" element={<PromptsPage />} />
-                    <Route path="my-card" element={<ComingSoon title="My Bingo Card" />} />
-                    <Route path="others-cards" element={<ComingSoon title="Others' Cards" />} />
+                    <Route path="my-card" element={<MyBingoCardPage />} />
+                    <Route path="others-cards" element={<OthersCardsPage />} />
                 </Route>
             </Routes>
         </BrowserRouter>

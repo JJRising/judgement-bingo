@@ -64,7 +64,8 @@ public class PromptManagementService {
         if (prompt.getCreatedBy().equals(player)) {
             throw new InvalidOperation("Can't approve your own prompt");
         }
-        if (prompt.getApprovedBy() == null) {
+        if (prompt.getStatus() == Prompt.Status.SUBMITTED) {
+            prompt.setStatus(Prompt.Status.ACCEPTED);
             prompt.setApprovedBy(player);
             prompt.setApprovedAt(Instant.now());
             promptRepository.save(prompt);

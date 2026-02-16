@@ -29,9 +29,16 @@ public class CardManagementRouter {
         return cardMapper.toDto(cards);
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('END_USER')")
+    public BingoCardDto getMyCard(@PathVariable UUID gameId) {
+        BingoCard card = cardManagementService.getMyCard(gameId);
+        return cardMapper.toDto(card);
+    }
+
     @PutMapping("/me")
     @PreAuthorize("hasRole('END_USER')")
-    public BingoCardDto updateCard(
+    public BingoCardDto updateMyCard(
             @PathVariable UUID gameId,
             @RequestBody BingoCardUpdateDto cardUpdate
     ) throws InvalidOperation {

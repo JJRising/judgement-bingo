@@ -53,7 +53,7 @@ export function PromptsPage() {
         setPrompts(
             prompts.map((p) =>
                 p.id === promptId
-                    ? {...p, approvedBy: "current-user", approvedByName: "You"}
+                    ? {...p, status: "ACCEPTED", approvedBy: "current-user", approvedByName: "You"}
                     : p
             )
         );
@@ -85,7 +85,8 @@ export function PromptsPage() {
             ) : (
                 <div className="accordion" id="promptsAccordion">
                     {prompts.map((prompt) => {
-                        const isApproved = prompt.approvedBy != null;
+                        const isAccepted = prompt.status === "ACCEPTED" || prompt.status === "REVEALED";
+                        const isRevealed = prompt.status === "REVEALED";
                         const isCreator = prompt.createdBy === myPlayerId;
                         const isExpanded = expandedId === prompt.id;
 
@@ -103,10 +104,10 @@ export function PromptsPage() {
                                         }}
                                     >
                                         <span
-                                            className={`badge ${isApproved ? "bg-success" : "bg-warning"}`}
+                                            className={`badge ${isRevealed ? "bg-success" : isAccepted ? "bg-info" : "bg-warning"}`}
                                             style={{flexShrink: 0}}
                                         >
-                                            {isApproved ? "Approved" : "Pending"}
+                                            {isRevealed ? "Revealed" : isAccepted ? "Accepted" : "Submitted"}
                                         </span>
                                         <span
                                             className="badge bg-info text-dark"
@@ -137,13 +138,13 @@ export function PromptsPage() {
                                         <p className="mb-3" style={{whiteSpace: "pre-wrap"}}>
                                             {prompt.text}
                                         </p>
-                                        {isApproved && (
+                                        {isAccepted && (
                                             <p className="mb-3 text-muted">
                                                 <strong>Approved by:</strong> {prompt.approvedByName}
                                             </p>
                                         )}
                                         <div className="d-flex gap-2">
-                                            {!isApproved && !isCreator && (
+                                            {!isAccepted && !isCreator && (
                                                 <button
                                                     className="btn btn-success btn-sm"
                                                     onClick={() => handleApprove(prompt.id)}

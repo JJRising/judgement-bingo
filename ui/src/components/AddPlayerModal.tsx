@@ -5,22 +5,31 @@ import {Modal} from "bootstrap";
 interface AddPlayerModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSelect: (userId: string) => void;
+    onSelect: (userId: string, displayName: string) => void;
     existingUserIds: string[];
 }
 
 export function AddPlayerModal({isOpen, onClose, onSelect, existingUserIds}: AddPlayerModalProps) {
     const [users, setUsers] = useState<UserDto[]>([]);
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [showNameModal, setShowNameModal] = useState(false);
+    const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+    const [selectedUserName, setSelectedUserName] = useState("");
+    const [playerDisplayName, setPlayerDisplayName] = useState("");
     const [newName, setNewName] = useState("");
     const [newEmail, setNewEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const modalRef = React.useRef<HTMLDivElement>(null);
+    const nameModalRef = React.useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (isOpen) {
             fetchUsers().then(setUsers);
             setShowCreateForm(false);
+            setShowNameModal(false);
+            setSelectedUserId(null);
+            setSelectedUserName("");
+            setPlayerDisplayName("");
             setNewName("");
             setNewEmail("");
         }
@@ -39,7 +48,41 @@ export function AddPlayerModal({isOpen, onClose, onSelect, existingUserIds}: Add
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen]);
 
+    useEffect(() => {
+        if (showNameModal && nameModalRef.current) {
+            const m = new Modal(nameModalRef.current);
+            m.show();
+            const handleClose = () => {
+                setShowNameModal(false);
+                setSelectedUserId(null);
+                setSelectedUserName("");
+                setPlayerDisplayName("");
+            };
+            nameModalRef.current.addEventListener('hidden.bs.modal', handleClose, {once: true});
+            return () => {
+                m.dispose();
+            };
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [showNameModal]);
+
     if (!isOpen) return null;
+
+    const handleUserSelect = (userId: string, userName: string) => {
+        setSelectedUserId(userId);
+        setSelectedUserName(userName);
+        setPlayerDisplayName(userName);
+        setShowNameModal(true);
+    };
+
+    const handleConfirmPlayer = async () => {
+        if (!selectedUserId || !playerDisplayName.trim()) return;
+        // Close second modal first, then close first modal after a short delay
+        setShowNameModal(false);
+        await new Promise(resolve => setTimeout(resolve, 150));
+        onSelect(selectedUserId, playerDisplayName.trim());
+        onClose();
+    };
 
     const availableUsers = users.filter((u) => !existingUserIds.includes(u.id));
 
@@ -57,12 +100,12 @@ export function AddPlayerModal({isOpen, onClose, onSelect, existingUserIds}: Add
         }
     };
 
-    const handleSelect = (userId: string) => {
-        onSelect(userId);
-        onClose();
+    const handleSelect = (userId: string, userName: string) => {
+        handleUserSelect(userId, userName);
     };
 
     return (
+        <>
         <div className="modal fade" ref={modalRef} tabIndex={-1}>
             <div className="modal-dialog">
                 <div className="modal-content">
@@ -80,7 +123,7 @@ export function AddPlayerModal({isOpen, onClose, onSelect, existingUserIds}: Add
                                         <button
                                             key={user.id}
                                             className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                                            onClick={() => handleSelect(user.id)}
+                                            onClick={() => handleSelect(user.id, user.inviteName)}
                                         >
                                             <div>
                                                 <div className="fw-bold">{user.inviteName}</div>
@@ -149,5 +192,51 @@ export function AddPlayerModal({isOpen, onClose, onSelect, existingUserIds}: Add
                 </div>
             </div>
         </div>
+
+        {showNameModal && (
+            <div className="modal fade" ref={nameModalRef} tabIndex={-1}>
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title">Player Display Name</h5>
+                            <button type="button" className="btn-close" onClick={() => setShowNameModal(false)}></button>
+                        </div>
+                        <div className="modal-body">
+                            <p className="mb-3">Enter a display name for <strong>{selectedUserName}</strong>:</p>
+                            <div className="mb-3">
+                                <label className="form-label">Display Name</label>
+                                <input
+                                    type="text"
+                                    value={playerDisplayName}
+                                    onChange={(e) => setPlayerDisplayName(e.target.value)}
+                                    placeholder="Enter display name"
+                                    className="form-control"
+                                    autoFocus
+                                    onKeyDown={(e) => e.key === "Enter" && handleConfirmPlayer()}
+                                />
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button
+                                type="button"
+                                className="btn btn-outline-secondary"
+                                onClick={() => setShowNameModal(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={handleConfirmPlayer}
+                                disabled={!playerDisplayName.trim()}
+                            >
+                                Add Player
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     );
 }

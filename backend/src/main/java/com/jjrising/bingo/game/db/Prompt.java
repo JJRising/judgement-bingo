@@ -1,10 +1,7 @@
 package com.jjrising.bingo.game.db;
 
-import com.jjrising.bingo.encryption.EncryptionManifest;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -31,15 +28,15 @@ public class Prompt {
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
-    @Lob
-    @Column(nullable = false)
-    private byte[] ciphertext;
+//    @Lob
+//    @Column(nullable = false)
+//    private byte[] ciphertext;
+//
+//    @JdbcTypeCode(SqlTypes.JSON)
+//    @Column(name = "encryption_manifest")
+//    private EncryptionManifest encryptionManifest;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "encryption_manifest")
-    private EncryptionManifest encryptionManifest;
-
-    private String revealedText;
+    private String text;
 
     @Enumerated(EnumType.STRING)
     private Status status;

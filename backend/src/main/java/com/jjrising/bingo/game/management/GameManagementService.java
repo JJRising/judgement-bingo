@@ -37,10 +37,10 @@ public class GameManagementService {
         return gameRepository.getReferenceById(gameId);
     }
 
-    public Player addPlayerToGame(UUID gameId, UUID userId) throws InvalidOperation {
+    public Player addPlayerToGame(UUID gameId, UUID userId, String displayName) throws InvalidOperation {
         Game game = getGameForSetup(gameId);
         AppUser appUser = appUserRepository.getReferenceById(userId);
-        Player player = Player.builder().game(game).user(appUser).build();
+        Player player = Player.builder().game(game).user(appUser).displayName(displayName).build();
         game.getPlayers().add(player);
 
         // All players are also subjects

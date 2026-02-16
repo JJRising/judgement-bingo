@@ -46,6 +46,7 @@ public class PromptManagementService {
                 .game(game)
                 .status(Prompt.Status.SUBMITTED)
                 .subject(subject)
+                .text(promptRequest.text())
                 .createdBy(player)
                 .createdAt(Instant.now())
                 .build();

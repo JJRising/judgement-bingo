@@ -1,12 +1,16 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
+import {Modal} from "bootstrap";
 import {
     addPlayer,
     addSubject,
     deletePlayer,
     deleteSubject,
+    fetchGame,
     fetchPlayers,
     fetchSubjects,
+    publishGame,
+    type GameDto,
     type PlayerDto,
     type SubjectDto,
 } from "../../api/games";
@@ -14,21 +18,27 @@ import {AddPlayerModal} from "../../components/AddPlayerModal";
 
 export function ManagementPage() {
     const {gameId} = useParams<{ gameId: string }>();
+    const [game, setGame] = useState<GameDto | null>(null);
     const [players, setPlayers] = useState<PlayerDto[]>([]);
     const [subjects, setSubjects] = useState<SubjectDto[]>([]);
     const [newSubjectLabel, setNewSubjectLabel] = useState("");
     const [showPlayerModal, setShowPlayerModal] = useState(false);
+    const [showPublishModal, setShowPublishModal] = useState(false);
+    const [publishing, setPublishing] = useState(false);
 
     useEffect(() => {
         if (!gameId) return;
+        fetchGame(gameId).then(setGame);
         fetchPlayers(gameId).then(setPlayers);
         fetchSubjects(gameId).then(setSubjects);
     }, [gameId]);
 
     if (!gameId) return null;
 
-    const handleAddPlayer = async (userId: string) => {
-        const player = await addPlayer(gameId, userId);
+    const isSetup = game?.status === "SETUP";
+
+    const handleAddPlayer = async (userId: string, displayName: string) => {
+        const player = await addPlayer(gameId, userId, displayName);
         setPlayers([...players, player]);
         fetchSubjects(gameId).then(setSubjects);
     };
@@ -51,9 +61,42 @@ export function ManagementPage() {
         setSubjects(subjects.filter((s) => s.id !== subjectId));
     };
 
+    const handlePublish = async () => {
+        if (!gameId) return;
+        setPublishing(true);
+        try {
+            await publishGame(gameId);
+            setShowPublishModal(false);
+        } finally {
+            setPublishing(false);
+        }
+    };
+
+    const getStatusBadgeClass = (status: string) => {
+        switch (status) {
+            case "SETUP":
+                return "bg-secondary";
+            case "PROMPTS":
+                return "bg-primary";
+            case "GAME":
+                return "bg-warning";
+            case "COMPLETE":
+                return "bg-success";
+            default:
+                return "bg-secondary";
+        }
+    };
+
     return (
         <div>
-            <h2 className="mb-4">Management</h2>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2>Management</h2>
+                {game && (
+                    <span className={`badge fs-6 ${getStatusBadgeClass(game.status)}`}>
+                        {game.status}
+                    </span>
+                )}
+            </div>
 
             <div className="row g-4 mb-4">
                 <div className="col-md-6 border rounded p-3">
@@ -65,21 +108,25 @@ export function ManagementPage() {
                                 className="list-group-item d-flex justify-content-between align-items-center bg-light"
                             >
                                 <span>{player.displayName}</span>
-                                <button
-                                    onClick={() => handleDeletePlayer(player.id)}
-                                    className="btn btn-sm btn-link text-danger"
-                                >
-                                    Delete
-                                </button>
+                                {isSetup && (
+                                    <button
+                                        onClick={() => handleDeletePlayer(player.id)}
+                                        className="btn btn-sm btn-link text-danger"
+                                    >
+                                        Delete
+                                    </button>
+                                )}
                             </div>
                         ))}
                     </div>
-                    <button
-                        onClick={() => setShowPlayerModal(true)}
-                        className="btn btn-primary w-100"
-                    >
-                        Add Player
-                    </button>
+                    {isSetup && (
+                        <button
+                            onClick={() => setShowPlayerModal(true)}
+                            className="btn btn-primary w-100"
+                        >
+                            Add Player
+                        </button>
+                    )}
                 </div>
 
                 <div className="col-md-6 border rounded p-3">
@@ -96,31 +143,35 @@ export function ManagementPage() {
                                         {subject.type}
                                     </span>
                                 </div>
-                                <button
-                                    onClick={() => handleDeleteSubject(subject.id)}
-                                    className="btn btn-sm btn-link text-danger"
-                                >
-                                    Delete
-                                </button>
+                                {isSetup && subject.type !== "Player" && (
+                                    <button
+                                        onClick={() => handleDeleteSubject(subject.id)}
+                                        className="btn btn-sm btn-link text-danger"
+                                    >
+                                        Delete
+                                    </button>
+                                )}
                             </div>
                         ))}
                     </div>
-                    <div className="d-flex gap-2">
-                        <input
-                            type="text"
-                            value={newSubjectLabel}
-                            onChange={(e) => setNewSubjectLabel(e.target.value)}
-                            placeholder="Subject label"
-                            className="form-control"
-                            onKeyDown={(e) => e.key === "Enter" && handleAddSubject()}
-                        />
-                        <button
-                            onClick={handleAddSubject}
-                            className="btn btn-primary"
-                        >
-                            Add
-                        </button>
-                    </div>
+                    {isSetup && (
+                        <div className="d-flex gap-2">
+                            <input
+                                type="text"
+                                value={newSubjectLabel}
+                                onChange={(e) => setNewSubjectLabel(e.target.value)}
+                                placeholder="Subject label"
+                                className="form-control"
+                                onKeyDown={(e) => e.key === "Enter" && handleAddSubject()}
+                            />
+                            <button
+                                onClick={handleAddSubject}
+                                className="btn btn-primary"
+                            >
+                                Add
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -130,6 +181,84 @@ export function ManagementPage() {
                 onSelect={handleAddPlayer}
                 existingUserIds={players.map((p) => p.userId)}
             />
+
+            {isSetup && (
+                <div className="mt-4 pt-3 border-top">
+                    <button
+                        onClick={() => setShowPublishModal(true)}
+                        className="btn btn-success w-100"
+                    >
+                        Publish Game
+                    </button>
+                </div>
+            )}
+
+            <PublishGameModal
+                isOpen={showPublishModal}
+                onClose={() => setShowPublishModal(false)}
+                onPublish={handlePublish}
+                publishing={publishing}
+            />
+        </div>
+    );
+}
+
+interface PublishGameModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onPublish: () => void;
+    publishing: boolean;
+}
+
+function PublishGameModal({isOpen, onClose, onPublish, publishing}: PublishGameModalProps) {
+    const modalRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        if (isOpen && modalRef.current) {
+            const m = new Modal(modalRef.current);
+            m.show();
+            const handleClose = () => onClose();
+            modalRef.current.addEventListener('hidden.bs.modal', handleClose, {once: true});
+            return () => {
+                m.dispose();
+            };
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]);
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="modal fade" ref={modalRef} tabIndex={-1}>
+            <div className="modal-dialog">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h5 className="modal-title">Publish Game</h5>
+                        <button type="button" className="btn-close" onClick={onClose}></button>
+                    </div>
+                    <div className="modal-body">
+                        <p>Are you sure you want to publish this game? Once published, players will be able to join and play.</p>
+                    </div>
+                    <div className="modal-footer">
+                        <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={onClose}
+                            disabled={publishing}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-success"
+                            onClick={onPublish}
+                            disabled={publishing}
+                        >
+                            {publishing ? "Publishing..." : "Publish"}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

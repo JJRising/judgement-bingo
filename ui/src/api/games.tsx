@@ -3,6 +3,7 @@ import keycloak from "../auth/keycloak";
 export interface GameDto {
     id: string;
     name: string;
+    status: string;
     published: boolean;
 }
 
@@ -39,6 +40,12 @@ export async function createGame(name: string): Promise<GameDto> {
     return res.json();
 }
 
+export async function fetchGame(gameId: string): Promise<GameDto> {
+    const res = await authFetch(`${API_BASE}/${gameId}`);
+    if (!res.ok) throw new Error("Failed to fetch game");
+    return res.json();
+}
+
 export interface PlayerDto {
     id: string;
     userId: string;
@@ -58,11 +65,11 @@ export async function fetchPlayers(gameId: string): Promise<PlayerDto[]> {
     return res.json();
 }
 
-export async function addPlayer(gameId: string, userId: string): Promise<PlayerDto> {
+export async function addPlayer(gameId: string, userId: string, displayName: string): Promise<PlayerDto> {
     const res = await authFetch(`${API_BASE}/${gameId}/players`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({ userId, displayName }),
     });
     if (!res.ok) throw new Error("Failed to add player");
     return res.json();
@@ -125,6 +132,14 @@ export async function deleteSubject(gameId: string, subjectId: string): Promise<
 export async function fetchMyPlayer(gameId: string): Promise<PlayerDto> {
     const res = await authFetch(`${API_BASE}/${gameId}/me`);
     if (!res.ok) throw new Error("Failed to fetch my player");
+    return res.json();
+}
+
+export async function publishGame(gameId: string): Promise<GameDto> {
+    const res = await authFetch(`${API_BASE}/${gameId}/publish`, {
+        method: "POST",
+    });
+    if (!res.ok) throw new Error("Failed to publish game");
     return res.json();
 }
 

@@ -13,7 +13,7 @@ public interface PromptMapper {
 
     @Mapping(target = "subjectId", source = "subject.id")
     @Mapping(target = "subjectName", source = "subject.label")
-    @Mapping(target = "text", source = "revealedText")
+    @Mapping(target = "text", source = "text")
     @Mapping(target = "createdBy", source = "createdBy.id")
     @Mapping(target = "createdByName", source = "createdBy.displayName")
     @Mapping(target = "approvedBy", source = "approvedBy.id")

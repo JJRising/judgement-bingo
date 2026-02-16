@@ -1,11 +1,13 @@
 import {useState} from "react";
 import {NavLink} from "react-router-dom";
+import {hasRole} from "../auth";
 
 const navItem = "nav-link";
 const navItemActive = "active";
 
 export function GameSidebar({gameId}: { gameId: string }) {
     const [isOpen, setIsOpen] = useState(true);
+    const isAdmin = hasRole("ADMIN");
 
     return (
         <div className="position-relative d-flex flex-shrink-0">
@@ -16,6 +18,7 @@ export function GameSidebar({gameId}: { gameId: string }) {
                 <div className="w-250px bg-light p-3 h-100" style={{opacity: isOpen ? 1 : 0}}>
                 <h5 className="mb-3">Game</h5>
                 <nav className="nav flex-column gap-1">
+                        {isAdmin && (
                         <NavLink
                             to={`/games/${gameId}/management`}
                             className={({isActive}) =>
@@ -23,7 +26,7 @@ export function GameSidebar({gameId}: { gameId: string }) {
                             }
                         >
                             Management
-                        </NavLink>
+                        </NavLink>)}
                         <NavLink
                             to={`/games/${gameId}/prompts`}
                             className={({isActive}) =>

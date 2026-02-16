@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;
 
 public record PromptRequest(
-        UUID subject_id,
+        UUID subjectId,
         @NotBlank String text
 ) {
 }

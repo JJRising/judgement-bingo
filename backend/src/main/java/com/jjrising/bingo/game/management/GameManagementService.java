@@ -5,6 +5,7 @@ import com.jjrising.bingo.encryption.KeyHierarchyTree;
 import com.jjrising.bingo.exceptions.InvalidGameException;
 import com.jjrising.bingo.exceptions.InvalidOperation;
 import com.jjrising.bingo.game.db.*;
+import com.jjrising.bingo.security.UserService;
 import com.jjrising.bingo.security.db.AppUser;
 import com.jjrising.bingo.security.db.AppUserRepository;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class GameManagementService {
 
     private final GameRepository gameRepository;
     private final AppUserRepository appUserRepository;
+    private final UserService userService;
 
     public Game createGame(String name) {
         Game game = Game.builder().name(name).status(Game.Status.SETUP).build();
@@ -106,5 +108,11 @@ public class GameManagementService {
             throw new InvalidOperation("Game has already advanced past Setup phase");
         }
         return game;
+    }
+
+    public Player getMyPlayer(UUID gameId) {
+        Game game = gameRepository.getReferenceById(gameId);
+        AppUser user = userService.getAuthenticatedUser();
+        return game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().orElseThrow();
     }
 }

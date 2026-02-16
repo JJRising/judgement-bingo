@@ -44,8 +44,19 @@ public class Prompt {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private Player createdBy;
+
     @Column(nullable = false)
     private Instant createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "approved_by")
+    private Player approvedBy;
+
+    @Column
+    private Instant approvedAt;
 
     @PrePersist
     private void prePersist() {

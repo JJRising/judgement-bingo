@@ -11,9 +11,13 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface PromptMapper {
 
-    @Mapping(target = "subject_id", source = "subject.id")
-    @Mapping(target = "subject_name", source = "subject.label")
+    @Mapping(target = "subjectId", source = "subject.id")
+    @Mapping(target = "subjectName", source = "subject.label")
     @Mapping(target = "text", source = "revealedText")
+    @Mapping(target = "createdBy", source = "createdBy.id")
+    @Mapping(target = "createdByName", source = "createdBy.displayName")
+    @Mapping(target = "approvedBy", source = "approvedBy.id")
+    @Mapping(target = "approvedByName", source = "approvedBy.displayName")
     PromptDto toDto(Prompt prompt);
 
     List<PromptDto> toDto(Collection<Prompt> prompts);

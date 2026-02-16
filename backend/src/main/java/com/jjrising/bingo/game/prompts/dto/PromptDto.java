@@ -5,8 +5,12 @@ import java.util.UUID;
 
 public record PromptDto(
         UUID id,
-        UUID subject_id,
-        String subject_name,
-        String text
+        UUID subjectId,
+        String subjectName,
+        String text,
+        UUID createdBy,
+        String createdByName,
+        UUID approvedBy,
+        String approvedByName
 ) {
 }

@@ -30,7 +30,7 @@ public class PromptManagementRouter {
     }
 
     @PostMapping("")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('END_USER')")
     public PromptDto createPrompt(
             @PathVariable UUID gameId,
             @RequestBody @Valid PromptRequest promptRequest
@@ -38,6 +38,16 @@ public class PromptManagementRouter {
         Prompt prompt = promptManagementService.createPrompt(gameId, promptRequest);
         return promptMapper.toDto(prompt);
     }
+
+    @PostMapping("/{promptId}/approve")
+    @PreAuthorize("hasRole('END_USER')")
+    public void approvePrompt(
+            @PathVariable UUID gameId,
+            @PathVariable UUID promptId
+    ) throws InvalidOperation {
+        promptManagementService.approvePrompt(gameId, promptId);
+    }
+
 
     @DeleteMapping("/{promptId}")
     @PreAuthorize("hasRole('ADMIN')")

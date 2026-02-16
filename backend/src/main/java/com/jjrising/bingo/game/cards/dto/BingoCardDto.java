@@ -5,8 +5,8 @@ import java.util.UUID;
 
 public record BingoCardDto(
         UUID id,
-        UUID player_id,
-        String player_name,
+        UUID playerId,
+        String playerName,
         Map<Integer, BingoSquareDto> squares
 ) {
 }

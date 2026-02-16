@@ -47,6 +47,13 @@ public class GameManagementRouter {
         return gameMapper.toDto(game);
     }
 
+    @GetMapping("/{gameId}/me")
+    @PreAuthorize("hasRole('END_USER')")
+    public PlayerDto getMyPlayer(@PathVariable UUID gameId) {
+        Player player = gameManagementService.getMyPlayer(gameId);
+        return playerMapper.toDto(player);
+    }
+
     @PostMapping("/{gameId}/publish")
     @PreAuthorize("hasRole('ADMIN')")
     public GameDto publishGame(@PathVariable UUID gameId) throws InvalidGameException, InvalidOperation {
@@ -55,7 +62,7 @@ public class GameManagementRouter {
     }
 
     @GetMapping("/{gameId}/players")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('END_USER')")
     public List<PlayerDto> getPlayers(@PathVariable UUID gameId) {
         Game game = gameManagementService.getGame(gameId);
         return playerMapper.toDto(game.getPlayers());
@@ -75,7 +82,7 @@ public class GameManagementRouter {
     }
 
     @GetMapping("/{gameId}/subjects")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('END_USER')")
     public List<SubjectDto> getSubjects(@PathVariable UUID gameId) {
         Game game = gameManagementService.getGame(gameId);
         return subjectMapper.toDto(game.getSubjects());

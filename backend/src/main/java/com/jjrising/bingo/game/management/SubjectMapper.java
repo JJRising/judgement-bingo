@@ -12,6 +12,7 @@ import java.util.List;
 public interface SubjectMapper {
 
     @Mapping(target = "type", source = "type")
+    @Mapping(target = "playerId", source = "player.id")
     @Mapping(target = "displayName", expression = "java(resolveDisplayName(subject))")
     SubjectDto toDto(Subject subject);
 

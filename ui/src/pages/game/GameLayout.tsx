@@ -7,9 +7,10 @@ export function GameLayout() {
     if (!gameId) return null;
 
     return (
-        <div className="d-flex vh-100">
+        <div className="d-flex flex-column flex-md-row" style={{height: "100vh"}}>
             <GameSidebar gameId={gameId}/>
-            <main className="flex-grow-1 p-4 overflow-auto">
+            <main className="flex-grow-1 p-3 pb-5"
+                  style={{flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch"}}>
                 <Outlet/>
             </main>
         </div>

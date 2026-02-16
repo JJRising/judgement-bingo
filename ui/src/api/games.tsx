@@ -49,6 +49,7 @@ export interface SubjectDto {
     id: string;
     type: string;
     displayName: string;
+    playerId?: string;
 }
 
 export async function fetchPlayers(gameId: string): Promise<PlayerDto[]> {
@@ -119,5 +120,53 @@ export async function deleteSubject(gameId: string, subjectId: string): Promise<
         method: "DELETE",
     });
     if (!res.ok) throw new Error("Failed to delete subject");
+}
+
+export async function fetchMyPlayer(gameId: string): Promise<PlayerDto> {
+    const res = await authFetch(`${API_BASE}/${gameId}/me`);
+    if (!res.ok) throw new Error("Failed to fetch my player");
+    return res.json();
+}
+
+// Prompt API
+export interface PromptDto {
+    id: string;
+    subjectId: string;
+    subjectName: string;
+    text: string;
+    createdBy: string;
+    createdByName: string;
+    approvedBy: string | null;
+    approvedByName: string | null;
+}
+
+export async function fetchPrompts(gameId: string): Promise<PromptDto[]> {
+    const res = await authFetch(`/api/v1/games/${gameId}/prompts`);
+    if (!res.ok) throw new Error("Failed to fetch prompts");
+    return res.json();
+}
+
+export async function createPrompt(gameId: string, subjectId: string, text: string): Promise<PromptDto> {
+    const res = await authFetch(`/api/v1/games/${gameId}/prompts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subjectId, text }),
+    });
+    if (!res.ok) throw new Error("Failed to create prompt");
+    return res.json();
+}
+
+export async function approvePrompt(gameId: string, promptId: string): Promise<void> {
+    const res = await authFetch(`/api/v1/games/${gameId}/prompts/${promptId}/approve`, {
+        method: "POST",
+    });
+    if (!res.ok) throw new Error("Failed to approve prompt");
+}
+
+export async function deletePrompt(gameId: string, promptId: string): Promise<void> {
+    const res = await authFetch(`/api/v1/games/${gameId}/prompts/${promptId}`, {
+        method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Failed to delete prompt");
 }
 

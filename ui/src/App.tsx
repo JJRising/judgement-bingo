@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HomePage } from "./pages/HomePage";
 import { GameLayout } from "./pages/game/GameLayout";
 import { ManagementPage } from "./pages/game/ManagementPage";
+import { PromptsPage } from "./pages/game/PromptsPage";
 import { ComingSoon } from "./pages/game/ComingSoon";
 import { hasRole } from "./auth";
 
@@ -29,7 +30,7 @@ export default function App() {
                             </RequireAdmin>
                         }
                     />
-                    <Route path="prompts" element={<ComingSoon title="Prompts" />} />
+                    <Route path="prompts" element={<PromptsPage />} />
                     <Route path="my-card" element={<ComingSoon title="My Bingo Card" />} />
                     <Route path="others-cards" element={<ComingSoon title="Others' Cards" />} />
                 </Route>

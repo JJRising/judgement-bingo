@@ -1,1 +1,12 @@
-/* Custom styles - bootstrap is imported in main.tsx */
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  overflow: hidden; /* important: body never scrolls in this pattern */
+  overflow-x: hidden;
+}
+
+#root {
+  height: 100%;
+}

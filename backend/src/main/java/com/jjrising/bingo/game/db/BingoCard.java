@@ -3,6 +3,7 @@ package com.jjrising.bingo.game.db;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -23,4 +24,8 @@ public class BingoCard {
     @MapsId
     @JoinColumn(name = "playerId", nullable = false)
     private Player player;
+
+    @OneToMany(mappedBy = "bingoCard", cascade = CascadeType.ALL, orphanRemoval = true)
+    @MapKey(name = "idx")
+    private Map<Integer, BingoSquare> squares;
 }

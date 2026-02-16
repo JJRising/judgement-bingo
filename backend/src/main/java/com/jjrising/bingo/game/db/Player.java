@@ -34,6 +34,9 @@ public class Player {
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private Subject subject;
 
+    @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
+    private BingoCard bingoCard;
+
     @PrePersist
     private void prePersist() {
         if (id == null) {

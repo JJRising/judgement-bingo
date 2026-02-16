@@ -39,6 +39,7 @@ public class PromptManagementRouter {
     }
 
     @DeleteMapping("/{promptId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deletePrompt(
             @PathVariable UUID gameId,
             @PathVariable UUID promptId

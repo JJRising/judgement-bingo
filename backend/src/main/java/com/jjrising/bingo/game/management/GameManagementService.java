@@ -45,8 +45,15 @@ public class GameManagementService {
         Subject subject = Subject.builder().game(game).type(Subject.Type.PLAYER).player(player).build();
         game.getSubjects().add(subject);
         game = gameRepository.save(game);
+
         // We'll have to go fetch the new persisted model to return with the new id
-        return game.getPlayers().stream().filter(p -> p.getUser().getId().equals(userId)).findFirst().orElseThrow();
+        player = game.getPlayers().stream().filter(p -> p.getUser().getId().equals(userId)).findFirst().orElseThrow();
+
+        // Create a bingo card for the player
+        BingoCard bingoCard = BingoCard.builder().playerId(player.getId()).player(player).build();
+        player.setBingoCard(bingoCard);
+        gameRepository.save(game);
+        return player;
     }
 
     public void removePlayer(UUID gameId, UUID playerId) throws InvalidOperation {

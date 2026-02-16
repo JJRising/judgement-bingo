@@ -17,7 +17,7 @@ export function GameList({games}: { games: GameDto[] }) {
                 >
                     <div className="fw-bold">{g.name}</div>
                     <small className="text-muted">
-                        {g.published ? "Published" : "Draft"}
+                        {g.status}
                     </small>
                 </Link>
             ))}

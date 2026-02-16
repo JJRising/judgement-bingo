@@ -1,30 +1,40 @@
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {Modal} from "bootstrap";
-import {fetchMyBingoCard, fetchPrompts, updateBingoCard, type BingoCardDto, type BingoSquareDto, type PromptDto} from "../../api/games";
+import {fetchGame, fetchMyBingoCard, fetchPrompts, updateBingoCard, type BingoCardDto, type BingoSquareDto, type GameDto, type PromptDto} from "../../api/games";
 
 export function MyBingoCardPage() {
     const {gameId} = useParams<{ gameId: string }>();
+    const [game, setGame] = useState<GameDto | null>(null);
     const [card, setCard] = useState<BingoCardDto | null>(null);
     const [prompts, setPrompts] = useState<PromptDto[]>([]);
     const [selectedSquareIndex, setSelectedSquareIndex] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const isPrompts = game?.status === "PROMPTS";
+
     useEffect(() => {
         if (!gameId) return;
         Promise.all([
+            fetchGame(gameId),
             fetchMyBingoCard(gameId),
             fetchPrompts(gameId),
         ])
-            .then(([cardData, promptsData]) => {
+            .then(([gameData, cardData, promptsData]) => {
+                setGame(gameData);
                 setCard(cardData);
                 setPrompts(promptsData);
+            })
+            .catch(() => {
+                // If no card exists yet, just show game state
+                return fetchGame(gameId).then(setGame);
             })
             .finally(() => setLoading(false));
     }, [gameId]);
 
     const handleSelectSquare = async (index: number) => {
         if (index === 12) return; // Free square
+        if (!isPrompts) return; // Only allow selection during PROMPTS phase
         setSelectedSquareIndex(index);
     };
 
@@ -99,7 +109,7 @@ export function MyBingoCardPage() {
                                             display: "flex",
                                             alignItems: "center",
                                             justifyContent: "center",
-                                            cursor: "pointer",
+                                            cursor: isPrompts ? "pointer" : "default",
                                         }}
                                         onClick={() => handleSelectSquare(index)}
                                     >
@@ -116,7 +126,7 @@ export function MyBingoCardPage() {
                                         aspectRatio: "1",
                                         fontSize: "0.65rem",
                                         border: "1px solid black !important",
-                                        cursor: "pointer",
+                                        cursor: isPrompts ? "pointer" : "default",
                                         display: "flex",
                                         flexDirection: "column",
                                         overflow: "hidden",

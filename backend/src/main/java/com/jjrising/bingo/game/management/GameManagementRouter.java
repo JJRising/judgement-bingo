@@ -61,6 +61,13 @@ public class GameManagementRouter {
         return gameMapper.toDto(game);
     }
 
+    @PostMapping("/{gameId}/start")
+    @PreAuthorize("hasRole('ADMIN')")
+    public GameDto startGame(@PathVariable UUID gameId) throws InvalidGameException {
+        Game game = gameManagementService.startGame(gameId);
+        return gameMapper.toDto(game);
+    }
+
     @GetMapping("/{gameId}/players")
     @PreAuthorize("hasRole('END_USER')")
     public List<PlayerDto> getPlayers(@PathVariable UUID gameId) {

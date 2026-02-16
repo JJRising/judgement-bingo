@@ -4,7 +4,6 @@ export interface GameDto {
     id: string;
     name: string;
     status: string;
-    published: boolean;
 }
 
 const API_BASE = "/api/v1/games";
@@ -140,6 +139,14 @@ export async function publishGame(gameId: string): Promise<GameDto> {
         method: "POST",
     });
     if (!res.ok) throw new Error("Failed to publish game");
+    return res.json();
+}
+
+export async function startGame(gameId: string): Promise<GameDto> {
+    const res = await authFetch(`${API_BASE}/${gameId}/start`, {
+        method: "POST",
+    });
+    if (!res.ok) throw new Error("Failed to start game");
     return res.json();
 }
 

@@ -4,9 +4,11 @@ import {
     createPrompt,
     deletePrompt,
     approvePrompt,
+    fetchGame,
     fetchPrompts,
     fetchSubjects,
     fetchMyPlayer,
+    type GameDto,
     type PromptDto,
     type SubjectDto,
 } from "../../api/games";
@@ -15,6 +17,7 @@ import {AddPromptModal} from "../../components/AddPromptModal";
 
 export function PromptsPage() {
     const {gameId} = useParams<{ gameId: string }>();
+    const [game, setGame] = useState<GameDto | null>(null);
     const [prompts, setPrompts] = useState<PromptDto[]>([]);
     const [subjects, setSubjects] = useState<SubjectDto[]>([]);
     const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
@@ -23,16 +26,19 @@ export function PromptsPage() {
     const [loading, setLoading] = useState(true);
 
     const isAdmin = hasRole("ADMIN");
+    const isPrompts = game?.status === "PROMPTS";
 
     useEffect(() => {
         if (!gameId) return;
 
         Promise.all([
+            fetchGame(gameId),
             fetchPrompts(gameId),
             fetchMyPlayer(gameId).catch(() => null),
             fetchSubjects(gameId).catch(() => []),
         ])
-            .then(([promptsData, myPlayer, subjectsData]) => {
+            .then(([gameData, promptsData, myPlayer, subjectsData]) => {
+                setGame(gameData);
                 setPrompts(promptsData);
                 setMyPlayerId(myPlayer?.id ?? null);
                 setSubjects(subjectsData);
@@ -75,9 +81,11 @@ export function PromptsPage() {
         <div>
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2>Prompts</h2>
-                <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
-                    Add Prompt
-                </button>
+                {isPrompts && (
+                    <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
+                        Add Prompt
+                    </button>
+                )}
             </div>
 
             {prompts.length === 0 ? (
@@ -144,7 +152,7 @@ export function PromptsPage() {
                                             </p>
                                         )}
                                         <div className="d-flex gap-2">
-                                            {!isAccepted && !isCreator && (
+                                            {isPrompts && !isAccepted && !isCreator && (
                                                 <button
                                                     className="btn btn-success btn-sm"
                                                     onClick={() => handleApprove(prompt.id)}
@@ -152,7 +160,7 @@ export function PromptsPage() {
                                                     Approve
                                                 </button>
                                             )}
-                                            {isAdmin && (
+                                            {isAdmin && isPrompts && (
                                                 <button
                                                     className="btn btn-danger btn-sm"
                                                     onClick={() => handleDelete(prompt.id)}

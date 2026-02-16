@@ -4,7 +4,6 @@ import com.jjrising.bingo.game.cards.dto.BingoCardDto;
 import com.jjrising.bingo.game.cards.dto.BingoSquareDto;
 import com.jjrising.bingo.game.db.BingoCard;
 import com.jjrising.bingo.game.db.BingoSquare;
-import com.jjrising.bingo.game.db.Prompt;
 import com.jjrising.bingo.game.db.Subject;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,6 +20,7 @@ public interface CardMapper {
     @Mapping(target = "subject", expression = "java(resolveSubjectName(bingoSquare))")
     @Mapping(target = "status", source = "prompt.status")
     @Mapping(target = "text", source = "prompt.text")
+    @Mapping(target = "promptId", source = "prompt.id")
     BingoSquareDto toDto(BingoSquare bingoSquare);
 
     List<BingoCardDto> toDto(List<BingoCard> bingoCards);

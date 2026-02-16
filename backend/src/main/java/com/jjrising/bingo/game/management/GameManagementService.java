@@ -88,6 +88,9 @@ public class GameManagementService {
 
     public Game publishGame(UUID gameId) throws InvalidGameException, InvalidOperation {
         Game game = getGameForSetup(gameId);
+        if (game.getStatus() != Game.Status.SETUP) {
+            throw new InvalidGameException("Invalid game state");
+        }
         if (game.getPlayers().size() < 2) {
             throw new InvalidGameException("A valid game must have at least 2 players");
         }
@@ -99,6 +102,26 @@ public class GameManagementService {
         game.setKeyHierarchy(keyHierarchy);
 
         game.setStatus(Game.Status.PROMPTS);
+        return gameRepository.save(game);
+    }
+
+    public Game startGame(UUID gameId) throws InvalidGameException {
+        Game game = gameRepository.getReferenceById(gameId);
+        if (game.getStatus() != Game.Status.PROMPTS) {
+            throw new InvalidGameException("Invalid game state");
+        }
+        for (Player player : game.getPlayers()) {
+            BingoCard card = player.getBingoCard();
+            if (card.getSquares().size() != 24) {
+                throw new InvalidGameException("BingoCards not filled");
+            }
+            for (Prompt prompt : card.getSquares().values().stream().map(BingoSquare::getPrompt).toList()) {
+                if (prompt.getStatus() != Prompt.Status.ACCEPTED) {
+                    throw new InvalidGameException("BingoCard has unaccepted prompts");
+                }
+            }
+        }
+        game.setStatus(Game.Status.GAME);
         return gameRepository.save(game);
     }
 

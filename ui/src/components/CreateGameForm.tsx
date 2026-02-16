@@ -24,9 +24,9 @@ export function CreateGameForm({
     };
 
     return (
-        <form onSubmit={submit} className="mt-6 flex gap-2">
+        <form onSubmit={submit} className="mt-4 d-flex gap-2">
             <input
-                className="border rounded px-3 py-2 flex-1"
+                className="form-control"
                 placeholder="New game name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -34,7 +34,7 @@ export function CreateGameForm({
             <button
                 type="submit"
                 disabled={loading}
-                className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+                className="btn btn-primary"
             >
                 Create Game
             </button>

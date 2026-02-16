@@ -53,70 +53,70 @@ export function ManagementPage() {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-4">Management</h1>
+            <h2 className="mb-4">Management</h2>
 
-            <div className="flex flex-col md:flex-row gap-6 mb-6">
-                <div className="flex-1 border border-gray-300 rounded p-4">
-                    <h2 className="text-lg font-semibold mb-3">Players</h2>
-                    <ul className="space-y-2 mb-4">
+            <div className="row g-4 mb-4">
+                <div className="col-md-6 border rounded p-3">
+                    <h5 className="mb-3">Players</h5>
+                    <div className="list-group mb-3">
                         {players.map((player) => (
-                            <li
+                            <div
                                 key={player.id}
-                                className="flex items-center justify-between bg-gray-50 p-2 rounded"
+                                className="list-group-item d-flex justify-content-between align-items-center bg-light"
                             >
                                 <span>{player.displayName}</span>
                                 <button
                                     onClick={() => handleDeletePlayer(player.id)}
-                                    className="text-red-600 hover:text-red-800 text-sm"
+                                    className="btn btn-sm btn-link text-danger"
                                 >
                                     Delete
                                 </button>
-                            </li>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                     <button
                         onClick={() => setShowPlayerModal(true)}
-                        className="w-full bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
+                        className="btn btn-primary w-100"
                     >
                         Add Player
                     </button>
                 </div>
 
-                <div className="flex-1 border border-gray-300 rounded p-4">
-                    <h2 className="text-lg font-semibold mb-3">Subjects</h2>
-                    <ul className="space-y-2 mb-4">
+                <div className="col-md-6 border rounded p-3">
+                    <h5 className="mb-3">Subjects</h5>
+                    <div className="list-group mb-3">
                         {subjects.map((subject) => (
-                            <li
+                            <div
                                 key={subject.id}
-                                className="flex items-center justify-between bg-gray-50 p-2 rounded"
+                                className="list-group-item d-flex justify-content-between align-items-center bg-light"
                             >
                                 <div>
                                     <span>{subject.displayName}</span>
-                                    <span className="ml-2 text-xs text-gray-500 bg-gray-200 px-1.5 py-0.5 rounded">
+                                    <span className="ms-2 badge bg-secondary">
                                         {subject.type}
                                     </span>
                                 </div>
                                 <button
                                     onClick={() => handleDeleteSubject(subject.id)}
-                                    className="text-red-600 hover:text-red-800 text-sm"
+                                    className="btn btn-sm btn-link text-danger"
                                 >
                                     Delete
                                 </button>
-                            </li>
+                            </div>
                         ))}
-                    </ul>
-                    <div className="flex gap-2">
+                    </div>
+                    <div className="d-flex gap-2">
                         <input
                             type="text"
                             value={newSubjectLabel}
                             onChange={(e) => setNewSubjectLabel(e.target.value)}
                             placeholder="Subject label"
-                            className="flex-1 border border-gray-300 rounded px-2 py-1"
+                            className="form-control"
                             onKeyDown={(e) => e.key === "Enter" && handleAddSubject()}
                         />
                         <button
                             onClick={handleAddSubject}
-                            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                            className="btn btn-primary"
                         >
                             Add
                         </button>

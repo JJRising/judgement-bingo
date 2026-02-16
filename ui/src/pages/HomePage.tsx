@@ -16,9 +16,9 @@ export function HomePage() {
     }, []);
 
     return (
-        <div className="max-w-3xl mx-auto p-8">
-            <h1 className="text-3xl font-bold mb-1">Welcome {userName}!</h1>
-            <p className="text-gray-600 mb-6">Select a game to begin</p>
+        <div className="container-md mx-auto p-4">
+            <h1 className="display-5 mb-1">Welcome {userName}!</h1>
+            <p className="text-muted mb-4">Select a game to begin</p>
 
             {loading ? <p>Loading games…</p> : <GameList games={games}/>}
 

@@ -7,9 +7,9 @@ export function GameLayout() {
     if (!gameId) return null;
 
     return (
-        <div className="flex h-screen">
+        <div className="d-flex vh-100">
             <GameSidebar gameId={gameId}/>
-            <main className="flex-1 p-8 overflow-y-auto">
+            <main className="flex-grow-1 p-4 overflow-auto">
                 <Outlet/>
             </main>
         </div>

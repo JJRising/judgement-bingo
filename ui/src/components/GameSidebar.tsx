@@ -1,21 +1,21 @@
 import {useState} from "react";
 import {NavLink} from "react-router-dom";
 
-const navItem = "block px-4 py-2 rounded hover:bg-gray-200";
-const navItemActive = "bg-gray-300 font-medium";
+const navItem = "nav-link";
+const navItemActive = "active";
 
 export function GameSidebar({gameId}: { gameId: string }) {
     const [isOpen, setIsOpen] = useState(true);
 
     return (
-        <div className="relative flex-shrink-0 flex">
+        <div className="position-relative d-flex flex-shrink-0">
             <aside
-                className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "border-r border-gray-300" : ""}`}
+                className={`overflow-hidden ${isOpen ? "border-end border-secondary" : ""}`}
                 style={{width: isOpen ? "16rem" : "0"}}
             >
-                <div className="w-64 bg-gray-100 p-4 h-full transition-opacity duration-300 ease-in-out" style={{opacity: isOpen ? 1 : 0}}>
-                <h2 className="text-lg font-semibold mb-4">Game</h2>
-                <nav className="space-y-1">
+                <div className="w-250px bg-light p-3 h-100" style={{opacity: isOpen ? 1 : 0}}>
+                <h5 className="mb-3">Game</h5>
+                <nav className="nav flex-column gap-1">
                         <NavLink
                             to={`/games/${gameId}/management`}
                             className={({isActive}) =>
@@ -53,7 +53,7 @@ export function GameSidebar({gameId}: { gameId: string }) {
             </aside>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="self-start mt-4 w-8 h-8 bg-gray-100 border border-gray-300 rounded-r flex items-center justify-center hover:bg-gray-200"
+                className="align-self-start mt-4 w-40 h-40 bg-light border border-secondary rounded-end d-flex align-items-center justify-content-center"
                 aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
             >
                 {isOpen ? "←" : "→"}

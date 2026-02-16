@@ -1,5 +1,6 @@
 package com.jjrising.bingo.game.cards;
 
+import com.jjrising.bingo.exceptions.InvalidOperation;
 import com.jjrising.bingo.game.cards.dto.BingoCardUpdateDto;
 import com.jjrising.bingo.game.db.*;
 import com.jjrising.bingo.security.UserService;
@@ -25,8 +26,11 @@ public class CardManagementService {
         return bingoCardRepository.findAllByPlayer_Game_Id(gameId);
     }
 
-    public BingoCard updateMyCard(UUID gameId, BingoCardUpdateDto cardUpdate) {
+    public BingoCard updateMyCard(UUID gameId, BingoCardUpdateDto cardUpdate) throws InvalidOperation {
         Game game = gameRepository.getReferenceById(gameId);
+        if (game.getStatus() != Game.Status.PROMPTS) {
+            throw new InvalidOperation("Game is not in the prompts stage!");
+        }
         AppUser user = userService.getAuthenticatedUser();
         Player mePlayer = game.getPlayers().stream()
                 .filter(p -> p.getUser().equals(user)).findFirst()

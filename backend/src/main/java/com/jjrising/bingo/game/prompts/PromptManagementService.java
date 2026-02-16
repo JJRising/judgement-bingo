@@ -1,5 +1,6 @@
 package com.jjrising.bingo.game.prompts;
 
+import com.jjrising.bingo.exceptions.InvalidOperation;
 import com.jjrising.bingo.game.db.*;
 import com.jjrising.bingo.game.management.GameManagementService;
 import com.jjrising.bingo.game.prompts.dto.PromptRequest;
@@ -29,8 +30,11 @@ public class PromptManagementService {
                 .toList();
     }
 
-    public Prompt createPrompt(UUID gameId, PromptRequest promptRequest) {
+    public Prompt createPrompt(UUID gameId, PromptRequest promptRequest) throws InvalidOperation {
         Game game = gameManagementService.getGame(gameId);
+        if (game.getStatus() != Game.Status.PROMPTS) {
+            throw new InvalidOperation("Game is not in the prompts stage!");
+        }
         AppUser user = userService.getAuthenticatedUser();
         Subject subject = subjectRepository.getReferenceById(promptRequest.subject_id());
         if (subject.getPlayer() != null && subject.getPlayer().getUser().equals(user)) {

@@ -1,5 +1,6 @@
 package com.jjrising.bingo.game.cards;
 
+import com.jjrising.bingo.exceptions.InvalidOperation;
 import com.jjrising.bingo.game.cards.dto.BingoCardDto;
 import com.jjrising.bingo.game.cards.dto.BingoCardUpdateDto;
 import com.jjrising.bingo.game.db.BingoCard;
@@ -33,7 +34,7 @@ public class CardManagementRouter {
     public BingoCardDto updateCard(
             @PathVariable UUID gameId,
             @RequestBody BingoCardUpdateDto cardUpdate
-    ) {
+    ) throws InvalidOperation {
         BingoCard bingoCard = cardManagementService.updateMyCard(gameId, cardUpdate);
         return cardMapper.toDto(bingoCard);
     }

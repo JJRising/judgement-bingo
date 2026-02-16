@@ -1,5 +1,6 @@
 package com.jjrising.bingo.game.prompts;
 
+import com.jjrising.bingo.exceptions.InvalidOperation;
 import com.jjrising.bingo.game.db.Prompt;
 import com.jjrising.bingo.game.prompts.dto.PromptDto;
 import com.jjrising.bingo.game.prompts.dto.PromptRequest;
@@ -33,7 +34,7 @@ public class PromptManagementRouter {
     public PromptDto createPrompt(
             @PathVariable UUID gameId,
             @RequestBody @Valid PromptRequest promptRequest
-    ) {
+    ) throws InvalidOperation {
         Prompt prompt = promptManagementService.createPrompt(gameId, promptRequest);
         return promptMapper.toDto(prompt);
     }

@@ -72,6 +72,60 @@ public class PromptManagementService {
         }
     }
 
+    public void completePrompt(UUID gameId, UUID promptId) throws InvalidOperation {
+        Game game = gameManagementService.getGame(gameId);
+        if (game.getStatus() != Game.Status.GAME) {
+            throw new InvalidOperation("Game is not in the Game stage!");
+        }
+        AppUser user = userService.getAuthenticatedUser();
+        Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().orElseThrow();
+        Prompt prompt = promptRepository.getReferenceById(promptId);
+        if (prompt.getStatus() == Prompt.Status.ACCEPTED) {
+            prompt.setStatus(Prompt.Status.COMPLETED);
+            prompt.setCompletedBy(player);
+            prompt.setCompletedAt(Instant.now());
+            promptRepository.save(prompt);
+        }
+    }
+
+    public void incompletePrompt(UUID gameId, UUID promptId) throws InvalidOperation {
+        Game game = gameManagementService.getGame(gameId);
+        if (game.getStatus() != Game.Status.GAME) {
+            throw new InvalidOperation("Game is not in the Game stage!");
+        }
+        AppUser user = userService.getAuthenticatedUser();
+        Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().orElseThrow();
+        Prompt prompt = promptRepository.getReferenceById(promptId);
+        if (!prompt.getCompletedBy().equals(player)) {
+            throw new InvalidOperation("Can't incomplete a prompt you didn't completed");
+        }
+        if (prompt.getStatus() == Prompt.Status.COMPLETED) {
+            prompt.setStatus(Prompt.Status.ACCEPTED);
+            prompt.setCompletedBy(null);
+            prompt.setCompletedAt(null);
+            promptRepository.save(prompt);
+        }
+    }
+
+    public void acknowledgePrompt(UUID gameId, UUID promptId) throws InvalidOperation {
+        Game game = gameManagementService.getGame(gameId);
+        if (game.getStatus() != Game.Status.GAME) {
+            throw new InvalidOperation("Game is not in the Game stage!");
+        }
+        AppUser user = userService.getAuthenticatedUser();
+        Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().orElseThrow();
+        Prompt prompt = promptRepository.getReferenceById(promptId);
+        if (prompt.getCompletedBy().equals(player)) {
+            throw new InvalidOperation("Can't acknowledge a prompt you completed");
+        }
+        if (prompt.getStatus() == Prompt.Status.COMPLETED) {
+            prompt.setStatus(Prompt.Status.ACKNOWLEDGED);
+            prompt.setAcknowledgedBy(player);
+            prompt.setAcknowledgedAt(Instant.now());
+            promptRepository.save(prompt);
+        }
+    }
+
     public void deletePrompt(UUID promptId) {
         promptRepository.deleteById(promptId);
     }

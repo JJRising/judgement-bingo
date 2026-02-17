@@ -1,5 +1,5 @@
 import type { JwtProvider, RoleChecker } from "./types";
-import keycloak from "./keycloak";
+import { auth } from "./index";
 
 let currentProvider: JwtProvider | null = null;
 
@@ -11,15 +11,16 @@ export function getJwtProvider(): JwtProvider | null {
     return currentProvider;
 }
 
-function getDefaultProvider(): JwtProvider | null {
+function getDefaultProvider(): JwtProvider {
     if (currentProvider) {
         return currentProvider;
     }
 
+    // Handle both keycloak (uses token property) and google (uses getToken method)
     return {
-        getToken: () => keycloak.token,
-        getParsedToken: () => keycloak.tokenParsed as any,
-        isAuthenticated: () => keycloak.authenticated ?? false,
+        getToken: () => (auth as any).getToken?.() ?? (auth as any).token,
+        getParsedToken: () => (auth as any).getParsedToken?.() ?? (auth as any).tokenParsed,
+        isAuthenticated: () => (auth as any).isAuthenticated?.() ?? (auth as any).authenticated ?? false,
     };
 }
 
@@ -36,7 +37,12 @@ function getRoles(): string[] {
 
     // Keycloak format: realm_access.roles
     if (parsed.realm_access?.roles) {
-        return parsed.realm_access.roles;
+        return parsed.realm_access.roles as string[];
+    }
+
+    // Google format: roles claim (direct array)
+    if (Array.isArray(parsed.roles)) {
+        return parsed.roles as string[];
     }
 
     return [];
@@ -70,8 +76,14 @@ export function createRoleChecker(customProvider?: JwtProvider): RoleChecker {
             return [];
         }
 
+        // Keycloak format: realm_access.roles
         if (parsed.realm_access?.roles) {
-            return parsed.realm_access.roles;
+            return parsed.realm_access.roles as string[];
+        }
+
+        // Google format: roles claim (direct array)
+        if (Array.isArray(parsed.roles)) {
+            return parsed.roles as string[];
         }
 
         return [];

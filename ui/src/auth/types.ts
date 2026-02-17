@@ -7,6 +7,7 @@ export interface JwtPayload {
             roles?: string[];
         };
     };
+    roles?: string[];
 }
 
 export interface JwtProvider {

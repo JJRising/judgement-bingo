@@ -20,6 +20,10 @@ public interface PromptMapper {
     @Mapping(target = "createdByName", source = "createdBy.displayName")
     @Mapping(target = "approvedBy", source = "approvedBy.id")
     @Mapping(target = "approvedByName", source = "approvedBy.displayName")
+    @Mapping(target = "completedBy", source = "completedBy.id")
+    @Mapping(target = "completedByName", source = "completedBy.displayName")
+    @Mapping(target = "acknowledgedBy", source = "acknowledgedBy.id")
+    @Mapping(target = "acknowledgedByName", source = "acknowledgedBy.displayName")
     PromptDto toDto(Prompt prompt);
 
     List<PromptDto> toDto(Collection<Prompt> prompts);

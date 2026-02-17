@@ -1,4 +1,4 @@
-import keycloak from "../auth/keycloak";
+import { auth } from "../auth";
 
 export interface GameDto {
     id: string;
@@ -9,7 +9,10 @@ export interface GameDto {
 const API_BASE = "/api/v1/games";
 
 async function authFetch(input: RequestInfo, init: RequestInit = {}) {
-    if (!keycloak.authenticated || !keycloak.token) {
+    const token = auth.getToken?.() ?? (auth as any).token;
+    const isAuthenticated = auth.isAuthenticated?.() ?? (auth as any).authenticated;
+
+    if (!isAuthenticated || !token) {
         throw new Error("Not authenticated");
     }
 
@@ -17,7 +20,7 @@ async function authFetch(input: RequestInfo, init: RequestInit = {}) {
         ...init,
         headers: {
             ...(init.headers ?? {}),
-            Authorization: `Bearer ${keycloak.token}`,
+            Authorization: `Bearer ${token}`,
         },
     });
 }
@@ -156,11 +159,15 @@ export interface PromptDto {
     subjectId: string;
     subjectName: string;
     text: string;
-    status: "SUBMITTED" | "ACCEPTED" | "REVEALED";
+    status: "SUBMITTED" | "ACCEPTED" | "COMPLETED" | "ACKNOWLEDGED";
     createdBy: string;
     createdByName: string;
     approvedBy: string | null;
     approvedByName: string | null;
+    completedBy: string | null;
+    completedByName: string | null;
+    acknowledgedBy: string | null;
+    acknowledgedByName: string | null;
 }
 
 export async function fetchPrompts(gameId: string): Promise<PromptDto[]> {
@@ -193,11 +200,33 @@ export async function deletePrompt(gameId: string, promptId: string): Promise<vo
     if (!res.ok) throw new Error("Failed to delete prompt");
 }
 
+export async function completePrompt(gameId: string, promptId: string): Promise<void> {
+    const res = await authFetch(`/api/v1/games/${gameId}/prompts/${promptId}/complete`, {
+        method: "POST",
+    });
+    if (!res.ok) throw new Error("Failed to complete prompt");
+}
+
+export async function incompletePrompt(gameId: string, promptId: string): Promise<void> {
+    const res = await authFetch(`/api/v1/games/${gameId}/prompts/${promptId}/incomplete`, {
+        method: "POST",
+    });
+    if (!res.ok) throw new Error("Failed to incomplete prompt");
+}
+
+export async function acknowledgePrompt(gameId: string, promptId: string): Promise<void> {
+    const res = await authFetch(`/api/v1/games/${gameId}/prompts/${promptId}/acknowledge`, {
+        method: "POST",
+    });
+    if (!res.ok) throw new Error("Failed to acknowledge prompt");
+}
+
 // Bingo Cards API
 export interface BingoSquareDto {
     subject: string;
     text: string;
-    status: "SUBMITTED" | "ACCEPTED" | "REVEALED";
+    status: "SUBMITTED" | "ACCEPTED" | "COMPLETED" | "ACKNOWLEDGED";
+    promptId?: string;
 }
 
 export interface BingoCardDto {

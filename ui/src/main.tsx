@@ -4,9 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import './index.css'
 import App from './App.tsx'
-import keycloak from "./auth/keycloak.ts";
+import { auth } from "./auth";
 
-keycloak
+auth
     .init({
         onLoad: "login-required",
         pkceMethod: "S256",
@@ -18,4 +18,7 @@ keycloak
                 <App />
             </StrictMode>,
         );
+    })
+    .catch((error) => {
+        console.error('Authentication initialization failed:', error);
     });

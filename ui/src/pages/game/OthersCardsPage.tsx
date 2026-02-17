@@ -26,7 +26,9 @@ export function OthersCardsPage() {
                 return "bg-warning";
             case "ACCEPTED":
                 return "bg-info";
-            case "REVEALED":
+            case "COMPLETED":
+                return "bg-warning text-dark";
+            case "ACKNOWLEDGED":
                 return "bg-success";
             default:
                 return "";

@@ -1,8 +1,11 @@
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {
+    acknowledgePrompt,
+    completePrompt,
     createPrompt,
     deletePrompt,
+    incompletePrompt,
     approvePrompt,
     fetchGame,
     fetchPrompts,
@@ -27,6 +30,7 @@ export function PromptsPage() {
 
     const isAdmin = hasRole("ADMIN");
     const isPrompts = game?.status === "PROMPTS";
+    const isGame = game?.status === "GAME";
 
     useEffect(() => {
         if (!gameId) return;
@@ -71,6 +75,39 @@ export function PromptsPage() {
         setPrompts(prompts.filter((p) => p.id !== promptId));
     };
 
+    const handleComplete = async (promptId: string) => {
+        await completePrompt(gameId, promptId);
+        setPrompts(
+            prompts.map((p) =>
+                p.id === promptId
+                    ? {...p, status: "COMPLETED", completedBy: "current-user", completedByName: "You"}
+                    : p
+            )
+        );
+    };
+
+    const handleIncomplete = async (promptId: string) => {
+        await incompletePrompt(gameId, promptId);
+        setPrompts(
+            prompts.map((p) =>
+                p.id === promptId
+                    ? {...p, status: "ACCEPTED", completedBy: null, completedByName: null}
+                    : p
+            )
+        );
+    };
+
+    const handleAcknowledge = async (promptId: string) => {
+        await acknowledgePrompt(gameId, promptId);
+        setPrompts(
+            prompts.map((p) =>
+                p.id === promptId
+                    ? {...p, status: "ACKNOWLEDGED", acknowledgedBy: "current-user", acknowledgedByName: "You"}
+                    : p
+            )
+        );
+    };
+
     const availableSubjects = subjects.filter((s) => s.playerId !== myPlayerId);
 
     if (loading) {
@@ -93,10 +130,26 @@ export function PromptsPage() {
             ) : (
                 <div className="accordion" id="promptsAccordion">
                     {prompts.map((prompt) => {
-                        const isAccepted = prompt.status === "ACCEPTED" || prompt.status === "REVEALED";
-                        const isRevealed = prompt.status === "REVEALED";
+                        const isAccepted = prompt.status === "ACCEPTED" || prompt.status === "COMPLETED" || prompt.status === "ACKNOWLEDGED";
+                        const isCompleted = prompt.status === "COMPLETED";
+                        const isAcknowledged = prompt.status === "ACKNOWLEDGED";
                         const isCreator = prompt.createdBy === myPlayerId;
+                        const isApprover = prompt.approvedBy === myPlayerId;
+                        const isCompleter = prompt.completedBy === myPlayerId || prompt.completedBy === "current-user";
+                        const canComplete = isGame && (isCreator || isApprover) && !isCompleted && !isAcknowledged;
+                        const canAcknowledge = isGame && isCompleted && !isAcknowledged && !prompt.completedBy && prompt.completedBy !== "current-user";
+                        const canIncomplete = isGame && isCompleter && !isAcknowledged;
                         const isExpanded = expandedId === prompt.id;
+
+                        const getStatusBadge = () => {
+                            switch (prompt.status) {
+                                case "SUBMITTED": return <span className="badge bg-warning">Submitted</span>;
+                                case "ACCEPTED": return <span className="badge bg-info">Accepted</span>;
+                                case "COMPLETED": return <span className="badge bg-warning text-dark">Completed</span>;
+                                case "ACKNOWLEDGED": return <span className="badge bg-success">Acknowledged</span>;
+                                default: return null;
+                            }
+                        };
 
                         return (
                             <div className="accordion-item" key={prompt.id}>
@@ -111,12 +164,7 @@ export function PromptsPage() {
                                             gap: "0.5rem",
                                         }}
                                     >
-                                        <span
-                                            className={`badge ${isRevealed ? "bg-success" : isAccepted ? "bg-info" : "bg-warning"}`}
-                                            style={{flexShrink: 0}}
-                                        >
-                                            {isRevealed ? "Revealed" : isAccepted ? "Accepted" : "Submitted"}
-                                        </span>
+                                        {getStatusBadge()}
                                         <span
                                             className="badge bg-info text-dark"
                                             style={{flexShrink: 0}}
@@ -146,18 +194,52 @@ export function PromptsPage() {
                                         <p className="mb-3" style={{whiteSpace: "pre-wrap"}}>
                                             {prompt.text}
                                         </p>
-                                        {isAccepted && (
-                                            <p className="mb-3 text-muted">
+                                        {prompt.approvedByName && (
+                                            <p className="mb-2 text-muted">
                                                 <strong>Approved by:</strong> {prompt.approvedByName}
                                             </p>
                                         )}
-                                        <div className="d-flex gap-2">
+                                        {prompt.completedByName && (
+                                            <p className="mb-2 text-muted">
+                                                <strong>Completed by:</strong> {prompt.completedByName}
+                                            </p>
+                                        )}
+                                        {prompt.acknowledgedByName && (
+                                            <p className="mb-3 text-muted">
+                                                <strong>Acknowledged by:</strong> {prompt.acknowledgedByName}
+                                            </p>
+                                        )}
+                                        <div className="d-flex gap-2 flex-wrap">
                                             {isPrompts && !isAccepted && !isCreator && (
                                                 <button
                                                     className="btn btn-success btn-sm"
                                                     onClick={() => handleApprove(prompt.id)}
                                                 >
                                                     Approve
+                                                </button>
+                                            )}
+                                            {canComplete && (
+                                                <button
+                                                    className="btn btn-warning btn-sm"
+                                                    onClick={() => handleComplete(prompt.id)}
+                                                >
+                                                    Complete
+                                                </button>
+                                            )}
+                                            {canIncomplete && (
+                                                <button
+                                                    className="btn btn-outline-warning btn-sm"
+                                                    onClick={() => handleIncomplete(prompt.id)}
+                                                >
+                                                    Incomplete
+                                                </button>
+                                            )}
+                                            {canAcknowledge && (
+                                                <button
+                                                    className="btn btn-success btn-sm"
+                                                    onClick={() => handleAcknowledge(prompt.id)}
+                                                >
+                                                    Acknowledge
                                                 </button>
                                             )}
                                             {isAdmin && isPrompts && (

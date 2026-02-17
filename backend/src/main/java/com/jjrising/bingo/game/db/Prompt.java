@@ -28,14 +28,6 @@ public class Prompt {
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
-//    @Lob
-//    @Column(nullable = false)
-//    private byte[] ciphertext;
-//
-//    @JdbcTypeCode(SqlTypes.JSON)
-//    @Column(name = "encryption_manifest")
-//    private EncryptionManifest encryptionManifest;
-
     private String text;
 
     @Enumerated(EnumType.STRING)
@@ -55,6 +47,20 @@ public class Prompt {
     @Column
     private Instant approvedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "completed_by")
+    private Player completedBy;
+
+    @Column
+    private Instant completedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "acknowledged_by")
+    private Player acknowledgedBy;
+
+    @Column
+    private Instant acknowledgedAt;
+
     @PrePersist
     private void prePersist() {
         if (id == null) {
@@ -68,6 +74,7 @@ public class Prompt {
     public enum Status {
         SUBMITTED,
         ACCEPTED,
-        REVEALED,
+        COMPLETED,
+        ACKNOWLEDGED,
     }
 }

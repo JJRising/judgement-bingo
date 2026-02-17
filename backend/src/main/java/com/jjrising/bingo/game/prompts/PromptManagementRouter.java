@@ -48,6 +48,33 @@ public class PromptManagementRouter {
         promptManagementService.approvePrompt(gameId, promptId);
     }
 
+    @PostMapping("/{promptId}/complete")
+    @PreAuthorize("hasRole('END_USER')")
+    public void completePrompt(
+            @PathVariable UUID gameId,
+            @PathVariable UUID promptId
+    ) throws InvalidOperation {
+        promptManagementService.completePrompt(gameId, promptId);
+    }
+
+    @PostMapping("/{promptId}/incomplete")
+    @PreAuthorize("hasRole('END_USER')")
+    public void incompletePrompt(
+            @PathVariable UUID gameId,
+            @PathVariable UUID promptId
+    ) throws InvalidOperation {
+        promptManagementService.incompletePrompt(gameId, promptId);
+    }
+
+    @PostMapping("/{promptId}/acknowledge")
+    @PreAuthorize("hasRole('END_USER')")
+    public void acknowledgePrompt(
+            @PathVariable UUID gameId,
+            @PathVariable UUID promptId
+    ) throws InvalidOperation {
+        promptManagementService.acknowledgePrompt(gameId, promptId);
+    }
+
 
     @DeleteMapping("/{promptId}")
     @PreAuthorize("hasRole('ADMIN')")

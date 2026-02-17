@@ -12,6 +12,10 @@ public record PromptDto(
         UUID createdBy,
         String createdByName,
         UUID approvedBy,
-        String approvedByName
+        String approvedByName,
+        UUID completedBy,
+        String completedByName,
+        UUID acknowledgedBy,
+        String acknowledgedByName
 ) {
 }

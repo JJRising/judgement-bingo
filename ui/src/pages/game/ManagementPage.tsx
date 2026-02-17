@@ -160,7 +160,7 @@ export function ManagementPage() {
                                         {subject.type}
                                     </span>
                                 </div>
-                                {isSetup && subject.type !== "Player" && (
+                                {isSetup && subject.type?.toUpperCase() !== "PLAYER" && (
                                     <button
                                         onClick={() => handleDeleteSubject(subject.id)}
                                         className="btn btn-sm btn-link text-danger"

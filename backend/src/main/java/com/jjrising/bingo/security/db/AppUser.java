@@ -39,6 +39,8 @@ public class AppUser {
 
     private Instant disabled_at;
 
+    private Boolean isAdmin;
+
     @PrePersist
     private void prePersist() {
         if (id == null) {

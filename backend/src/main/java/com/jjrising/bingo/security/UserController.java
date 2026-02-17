@@ -32,4 +32,14 @@ public class UserController {
         AppUser user = userService.addUserForInvite(userRequest);
         return userMapper.toDto(user);
     }
+
+    @GetMapping("/me/roles")
+    @PreAuthorize("hasRole('END_USER')")
+    public List<String> myRoles() {
+        if (userService.getAuthenticatedUser().getIsAdmin()) {
+            return List.of("ADMIN", "END_USER");
+        } else {
+            return List.of("END_USER");
+        }
+    }
 }

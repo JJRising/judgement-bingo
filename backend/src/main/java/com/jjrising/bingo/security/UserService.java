@@ -29,7 +29,7 @@ public class UserService {
     }
 
     public AppUser addUserForInvite(UserRequest userRequest) {
-        AppUser user = AppUser.builder().inviteName(userRequest.inviteName()).email(userRequest.email()).build();
+        AppUser user = AppUser.builder().inviteName(userRequest.inviteName()).email(userRequest.email()).isAdmin(false).build();
         return appUserRepository.save(user);
     }
 

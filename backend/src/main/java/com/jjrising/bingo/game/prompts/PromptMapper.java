@@ -3,8 +3,8 @@ package com.jjrising.bingo.game.prompts;
 import com.jjrising.bingo.game.db.Prompt;
 import com.jjrising.bingo.game.db.Subject;
 import com.jjrising.bingo.game.prompts.dto.PromptDto;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import com.jjrising.bingo.security.db.AppUser;
+import org.mapstruct.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,9 +24,18 @@ public interface PromptMapper {
     @Mapping(target = "completedByName", source = "completedBy.displayName")
     @Mapping(target = "acknowledgedBy", source = "acknowledgedBy.id")
     @Mapping(target = "acknowledgedByName", source = "acknowledgedBy.displayName")
-    PromptDto toDto(Prompt prompt);
+    PromptDto toDto(Prompt prompt, @Context AppUser user);
 
-    List<PromptDto> toDto(Collection<Prompt> prompts);
+    @AfterMapping
+    default void obfuscateIfNeeded(Prompt prompt,
+                                   @MappingTarget PromptDto dto,
+                                   @Context AppUser user) {
+        if (prompt.getSubject().getPlayer() != null && prompt.getSubject().getPlayer().getUser().equals(user)) {
+            dto.setText("---");
+        }
+    }
+
+    List<PromptDto> toDto(Collection<Prompt> prompts, @Context AppUser user);
 
     default String resolveSubjectName(Prompt prompt) {
         if (prompt == null || prompt.getSubject() == null || prompt.getSubject().getType() == null) {

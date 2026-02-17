@@ -9,10 +9,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          # issuer should match the location of the idp, but since the keycloak is running in docker with the app, the
-          # domain is the matching docker naming. So this is just for the local architecture.
-          issuer-uri: http://localhost:8089/realms/local
-          jwk-set-uri: http://idp:8080/realms/local/protocol/openid-connect/certs
+          issuer-uri: https://accounts.google.com
+          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
 
 bingo:
   security:
@@ -20,6 +18,8 @@ bingo:
       issuers:
         - issuer: http://localhost:8089/realms/local
           provider: KEYCLOAK
+        - issuer: https://accounts.google.com
+          provider: GOOGLE
 
 logging:
   level:

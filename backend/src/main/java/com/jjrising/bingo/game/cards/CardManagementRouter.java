@@ -4,6 +4,8 @@ import com.jjrising.bingo.exceptions.InvalidOperation;
 import com.jjrising.bingo.game.cards.dto.BingoCardDto;
 import com.jjrising.bingo.game.cards.dto.BingoCardUpdateDto;
 import com.jjrising.bingo.game.db.BingoCard;
+import com.jjrising.bingo.security.UserService;
+import com.jjrising.bingo.security.db.AppUser;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -19,21 +21,23 @@ import java.util.UUID;
 public class CardManagementRouter {
 
     private final CardManagementService cardManagementService;
+    private final UserService userService;
     private final CardMapper cardMapper;
 
     @GetMapping("")
     @PreAuthorize("hasRole('END_USER')")
     public List<BingoCardDto> getCards(@PathVariable UUID gameId) {
         List<BingoCard> cards = cardManagementService.getCardsForGame(gameId);
-        // TODO filter prompts about you
-        return cardMapper.toDto(cards);
+        AppUser user = userService.getAuthenticatedUser();
+        return cardMapper.toDto(cards, user);
     }
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('END_USER')")
     public BingoCardDto getMyCard(@PathVariable UUID gameId) {
         BingoCard card = cardManagementService.getMyCard(gameId);
-        return cardMapper.toDto(card);
+        AppUser user = userService.getAuthenticatedUser();
+        return cardMapper.toDto(card, user);
     }
 
     @PutMapping("/me")
@@ -42,7 +46,8 @@ public class CardManagementRouter {
             @PathVariable UUID gameId,
             @RequestBody BingoCardUpdateDto cardUpdate
     ) throws InvalidOperation {
-        BingoCard bingoCard = cardManagementService.updateMyCard(gameId, cardUpdate);
-        return cardMapper.toDto(bingoCard);
+        BingoCard card = cardManagementService.updateMyCard(gameId, cardUpdate);
+        AppUser user = userService.getAuthenticatedUser();
+        return cardMapper.toDto(card, user);
     }
 }

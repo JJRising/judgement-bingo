@@ -1,7 +1,13 @@
 import type { JwtProvider, RoleChecker } from "./types";
 import { auth } from "./index";
+import { AUTH_PROVIDER } from "./authConfig";
 
 let currentProvider: JwtProvider | null = null;
+
+// Cache for roles fetched from API (used for Google)
+let cachedRoles: string[] = [];
+let rolesLoading = false;
+let rolesLoadPromise: Promise<string[]> | null = null;
 
 export function setJwtProvider(provider: JwtProvider): void {
     currentProvider = provider;
@@ -24,7 +30,53 @@ function getDefaultProvider(): JwtProvider {
     };
 }
 
+// Fetch roles from API (used for Google as Google tokens don't contain roles)
+async function fetchRolesFromApi(): Promise<string[]> {
+    if (rolesLoading && rolesLoadPromise) {
+        return rolesLoadPromise;
+    }
+
+    rolesLoading = true;
+    rolesLoadPromise = (async () => {
+        try {
+            // Dynamic import to avoid circular dependency
+            const { fetchRoles } = await import("../api/games");
+            const roles = await fetchRoles();
+            cachedRoles = roles;
+            return roles;
+        } catch (error) {
+            console.error("Failed to fetch roles:", error);
+            return [];
+        } finally {
+            rolesLoading = false;
+            rolesLoadPromise = null;
+        }
+    })();
+
+    return rolesLoadPromise;
+}
+
+// Clear cached roles (call on logout)
+export function clearRolesCache(): void {
+    cachedRoles = [];
+    rolesLoading = false;
+    rolesLoadPromise = null;
+}
+
+// Force refresh roles from API
+export async function refreshRoles(): Promise<string[]> {
+    clearRolesCache();
+    return fetchRolesFromApi();
+}
+
+// Get roles based on auth provider
 function getRoles(): string[] {
+    // For Google, use cached roles from API
+    if (AUTH_PROVIDER === 'google') {
+        return cachedRoles;
+    }
+
+    // For Keycloak, parse from JWT token
     const provider = getDefaultProvider();
     if (!provider) {
         return [];
@@ -38,11 +90,6 @@ function getRoles(): string[] {
     // Keycloak format: realm_access.roles
     if (parsed.realm_access?.roles) {
         return parsed.realm_access.roles as string[];
-    }
-
-    // Google format: roles claim (direct array)
-    if (Array.isArray(parsed.roles)) {
-        return parsed.roles as string[];
     }
 
     return [];
@@ -67,6 +114,12 @@ export function createRoleChecker(customProvider?: JwtProvider): RoleChecker {
     const provider = customProvider ?? getDefaultProvider();
 
     function getProviderRoles(): string[] {
+        // For Google, use cached roles from API
+        if (AUTH_PROVIDER === 'google') {
+            return cachedRoles;
+        }
+
+        // For Keycloak, parse from JWT token
         if (!provider) {
             return [];
         }
@@ -79,11 +132,6 @@ export function createRoleChecker(customProvider?: JwtProvider): RoleChecker {
         // Keycloak format: realm_access.roles
         if (parsed.realm_access?.roles) {
             return parsed.realm_access.roles as string[];
-        }
-
-        // Google format: roles claim (direct array)
-        if (Array.isArray(parsed.roles)) {
-            return parsed.roles as string[];
         }
 
         return [];

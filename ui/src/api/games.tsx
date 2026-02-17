@@ -248,6 +248,12 @@ export async function fetchMyBingoCard(gameId: string): Promise<BingoCardDto> {
     return res.json();
 }
 
+export async function fetchRoles(): Promise<string[]> {
+    const res = await authFetch(`/api/v1/users/me/roles`);
+    if (!res.ok) throw new Error("Failed to fetch roles");
+    return res.json();
+}
+
 export async function updateBingoCard(gameId: string, prompts: Record<number, string>): Promise<BingoCardDto> {
     const res = await authFetch(`/api/v1/games/${gameId}/cards/me`, {
         method: "PUT",

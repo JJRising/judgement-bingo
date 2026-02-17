@@ -24,11 +24,7 @@ public class PromptManagementService {
 
     public List<Prompt> getPromptsForGame(UUID gameId) {
         Game game = gameManagementService.getGame(gameId);
-        AppUser user = userService.getAuthenticatedUser();
-        return game.getPrompts().stream()
-                .filter(prompt -> prompt.getSubject().getPlayer() == null
-                        || !prompt.getSubject().getPlayer().getUser().equals(user))
-                .toList();
+        return game.getPrompts().stream().toList();
     }
 
     public Prompt createPrompt(UUID gameId, PromptRequest promptRequest) throws InvalidOperation {

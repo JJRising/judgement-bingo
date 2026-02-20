@@ -1,4 +1,4 @@
-import { auth } from "../auth";
+import { auth, AUTH_PROVIDER } from "../auth";
 
 export interface GameDto {
     id: string;
@@ -8,7 +8,7 @@ export interface GameDto {
 
 const API_BASE = "/api/v1/games";
 
-async function authFetch(input: RequestInfo, init: RequestInit = {}) {
+async function authFetch(input: RequestInfo, init: RequestInit = {}, retryCount = 0) {
     const token = auth.getToken?.() ?? (auth as any).token;
     const isAuthenticated = auth.isAuthenticated?.() ?? (auth as any).authenticated;
 
@@ -16,13 +16,38 @@ async function authFetch(input: RequestInfo, init: RequestInit = {}) {
         throw new Error("Not authenticated");
     }
 
-    return fetch(input, {
-        ...init,
-        headers: {
-            ...(init.headers ?? {}),
-            Authorization: `Bearer ${token}`,
-        },
-    });
+    try {
+        const response = await fetch(input, {
+            ...init,
+            headers: {
+                ...(init.headers ?? {}),
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        // Handle 401 - token may be expired
+        if (response.status === 401 && retryCount === 0 && AUTH_PROVIDER === 'google') {
+            // Try to refresh the token
+            const googleAuth = auth as unknown as { refreshToken?: () => void; login?: () => void };
+            if (googleAuth.refreshToken) {
+                googleAuth.refreshToken();
+            } else if (googleAuth.login) {
+                // Fallback to login if refresh not available
+                googleAuth.login();
+            }
+            throw new Error("Token expired, redirecting to refresh");
+        }
+
+        return response;
+    } catch (error) {
+        // Rethrow if already retried or not a fetch error
+        if (retryCount > 0 || !(error instanceof TypeError)) {
+            throw error;
+        }
+        
+        // Network error - try once more
+        return authFetch(input, init, retryCount + 1);
+    }
 }
 
 export async function fetchGames(): Promise<GameDto[]> {

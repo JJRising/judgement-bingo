@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-import {Modal} from "bootstrap";
 import {fetchGame, fetchMyBingoCard, fetchPrompts, updateBingoCard, type BingoCardDto, type BingoSquareDto, type GameDto, type PromptDto} from "../../api/games";
 
 export function MyBingoCardPage() {
@@ -143,16 +142,15 @@ export function MyBingoCardPage() {
                         })}
                     </div>
 
-                    {selectedSquareIndex !== null && (
-                        <SquareSelectModal
-                            square={card.squares?.[selectedSquareIndex] ?? null}
-                            index={selectedSquareIndex}
-                            prompts={prompts}
-                            card={card}
-                            onClose={() => setSelectedSquareIndex(null)}
-                            onUpdate={handleUpdateCard}
-                        />
-                    )}
+                    <SquareSelectModal
+                        isOpen={selectedSquareIndex !== null}
+                        square={selectedSquareIndex !== null ? card.squares?.[selectedSquareIndex] ?? null : null}
+                        index={selectedSquareIndex ?? 0}
+                        prompts={prompts}
+                        card={card}
+                        onClose={() => setSelectedSquareIndex(null)}
+                        onUpdate={handleUpdateCard}
+                    />
                 </>
             ) : (
                 <p>No card found. Please wait for the game to start.</p>
@@ -162,6 +160,7 @@ export function MyBingoCardPage() {
 }
 
 interface SquareSelectModalProps {
+    isOpen: boolean;
     square: BingoSquareDto | null | undefined;
     index: number;
     prompts: PromptDto[];
@@ -170,22 +169,10 @@ interface SquareSelectModalProps {
     onUpdate: (prompts: Record<number, string>) => Promise<void>;
 }
 
-function SquareSelectModal({square, index, prompts, card, onClose, onUpdate}: SquareSelectModalProps) {
-    const modalRef = React.useRef<HTMLDivElement>(null);
+function SquareSelectModal({isOpen, square, index, prompts, card, onClose, onUpdate}: SquareSelectModalProps) {
     const [loading, setLoading] = useState(false);
 
-    React.useEffect(() => {
-        if (modalRef.current) {
-            const m = new Modal(modalRef.current);
-            m.show();
-            const handleClose = () => onClose();
-            modalRef.current.addEventListener('hidden.bs.modal', handleClose, {once: true});
-            return () => {
-                m.dispose();
-            };
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    if (!isOpen) return null;
 
     // Get prompts already in the card (excluding current square)
     const usedPromptIds = new Set<string>();
@@ -246,7 +233,7 @@ function SquareSelectModal({square, index, prompts, card, onClose, onUpdate}: Sq
     };
 
     return (
-        <div className="modal fade" ref={modalRef} tabIndex={-1}>
+        <div className="modal show d-block" style={{backgroundColor: "rgba(0,0,0,0.5)"}}>
             <div className="modal-dialog modal-lg">
                 <div className="modal-content">
                     <div className="modal-header">

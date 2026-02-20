@@ -5,11 +5,13 @@ import {GameList} from "../components/GameList";
 import {GoogleLoginButton} from "../components/GoogleLoginButton";
 import {AUTH_PROVIDER, auth} from "../auth";
 import { subscribeToAuthChanges } from "../auth/authState";
+import { hasRole } from "../auth/roleChecker";
 
 export function HomePage() {
     const [games, setGames] = useState<GameDto[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const isAdmin = hasRole("ADMIN");
 
     const loadGames = useCallback(async () => {
         setLoading(true);
@@ -66,9 +68,11 @@ export function HomePage() {
 
             {loading ? <p>Loading games…</p> : <GameList games={games}/>}
 
-            <CreateGameForm
-                onCreated={(g) => setGames((prev) => [...prev, g])}
-            />
+            {isAdmin && (
+                <CreateGameForm
+                    onCreated={(g) => setGames((prev) => [...prev, g])}
+                />
+            )}
         </div>
     );
 }

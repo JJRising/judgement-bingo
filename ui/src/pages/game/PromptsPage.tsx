@@ -27,6 +27,7 @@ export function PromptsPage() {
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [subjectFilter, setSubjectFilter] = useState<string>("all");
 
     const isAdmin = hasRole("ADMIN");
     const isPrompts = game?.status === "PROMPTS";
@@ -110,6 +111,16 @@ export function PromptsPage() {
 
     const availableSubjects = subjects.filter((s) => s.playerId !== myPlayerId);
 
+    // Get unique subject names from prompts
+    const uniqueSubjectNames = Array.from(
+        new Set(prompts.map((p) => p.subjectName))
+    ).sort((a, b) => a.localeCompare(b));
+
+    // Filter and sort prompts
+    const filteredPrompts = prompts
+        .filter((p) => subjectFilter === "all" || p.subjectName === subjectFilter)
+        .sort((a, b) => a.subjectName.localeCompare(b.subjectName));
+
     if (loading) {
         return <div>Loading prompts...</div>;
     }
@@ -125,11 +136,37 @@ export function PromptsPage() {
                 )}
             </div>
 
-            {prompts.length === 0 ? (
-                <div className="text-muted">No prompts yet. Be the first to add one!</div>
+            {uniqueSubjectNames.length > 0 && (
+                <div className="mb-3">
+                    <label htmlFor="subjectFilter" className="form-label me-2">
+                        Filter by subject:
+                    </label>
+                    <select
+                        id="subjectFilter"
+                        className="form-select form-select-sm"
+                        style={{width: "auto", display: "inline-block"}}
+                        value={subjectFilter}
+                        onChange={(e) => setSubjectFilter(e.target.value)}
+                    >
+                        <option value="all">All subjects</option>
+                        {uniqueSubjectNames.map((name) => (
+                            <option key={name} value={name}>
+                                {name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            )}
+
+            {filteredPrompts.length === 0 ? (
+                <div className="text-muted">
+                    {prompts.length === 0
+                        ? "No prompts yet. Be the first to add one!"
+                        : "No prompts match the selected filter."}
+                </div>
             ) : (
                 <div className="accordion" id="promptsAccordion">
-                    {prompts.map((prompt) => {
+                    {filteredPrompts.map((prompt) => {
                         const isAccepted = prompt.status === "ACCEPTED" || prompt.status === "COMPLETED" || prompt.status === "ACKNOWLEDGED";
                         const isCompleted = prompt.status === "COMPLETED";
                         const isAcknowledged = prompt.status === "ACKNOWLEDGED";

@@ -5,6 +5,7 @@ import { clearRolesCache, refreshRoles } from "./roleChecker";
 import { notifyAuthChange } from "./authState";
 
 const TOKEN_KEY = 'google_id_token';
+const TOKEN_EXPIRY_KEY = 'google_id_token_expiry';
 
 declare global {
     interface Window {
@@ -67,8 +68,10 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 class GoogleAuth {
     private token: string | undefined;
     private tokenParsed: Record<string, unknown> | undefined;
+    private tokenExpiry: number | undefined;
     private initialized = false;
     private initPromise: Promise<void> | null = null;
+    private refreshTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor() {
         // Restore token from localStorage on instantiation
@@ -77,9 +80,14 @@ class GoogleAuth {
 
     private loadFromStorage(): void {
         const storedToken = localStorage.getItem(TOKEN_KEY);
+        const storedExpiry = localStorage.getItem(TOKEN_EXPIRY_KEY);
+        
         if (storedToken) {
             this.token = storedToken;
             this.tokenParsed = decodeJwt(storedToken);
+        }
+        if (storedExpiry) {
+            this.tokenExpiry = parseInt(storedExpiry, 10);
         }
     }
 
@@ -89,6 +97,52 @@ class GoogleAuth {
         } else {
             localStorage.removeItem(TOKEN_KEY);
         }
+        
+        if (this.tokenExpiry) {
+            localStorage.setItem(TOKEN_EXPIRY_KEY, this.tokenExpiry.toString());
+        } else {
+            localStorage.removeItem(TOKEN_EXPIRY_KEY);
+        }
+    }
+
+    private setTokenExpiry(): void {
+        if (this.tokenParsed && this.tokenParsed.exp) {
+            this.tokenExpiry = (this.tokenParsed.exp as number) * 1000; // Convert to ms
+            // Schedule refresh 5 minutes before expiry
+            const refreshTime = this.tokenExpiry - 5 * 60 * 1000;
+            const timeUntilRefresh = refreshTime - Date.now();
+            
+            if (timeUntilRefresh > 0) {
+                this.scheduleRefresh(timeUntilRefresh);
+            }
+        }
+    }
+
+    private scheduleRefresh(delay: number): void {
+        // Clear any existing refresh timer
+        if (this.refreshTimer) {
+            clearTimeout(this.refreshTimer);
+        }
+        
+        this.refreshTimer = setTimeout(() => {
+            this.refreshToken();
+        }, delay);
+    }
+
+    // Get token expiry time in milliseconds
+    getTokenExpiry(): number | undefined {
+        return this.tokenExpiry;
+    }
+
+    // Check if token is expired or about to expire (within 5 minutes)
+    isTokenExpiringSoon(): boolean {
+        if (!this.tokenExpiry) return true;
+        return Date.now() > this.tokenExpiry - 5 * 60 * 1000;
+    }
+
+    // Refresh the token by re-triggering OAuth flow
+    refreshToken(): void {
+        this.login();
     }
 
     // Initialize the Google script (call on app startup)
@@ -138,6 +192,7 @@ class GoogleAuth {
             this.token = token;
             this.tokenParsed = decodeJwt(token);
             this.saveToStorage();
+            this.setTokenExpiry();
             
             // Notify components that auth state changed
             notifyAuthChange(true);
@@ -213,7 +268,13 @@ class GoogleAuth {
     logout(): void {
         this.token = undefined;
         this.tokenParsed = undefined;
+        this.tokenExpiry = undefined;
+        if (this.refreshTimer) {
+            clearTimeout(this.refreshTimer);
+            this.refreshTimer = null;
+        }
         localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(TOKEN_EXPIRY_KEY);
         clearRolesCache();
         notifyAuthChange(false);
         if (window.google?.accounts?.id) {

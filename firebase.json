@@ -18,7 +18,7 @@
   },
   "emulators": {
     "apphosting": {
-      "port": 5002,
+      "port": 4200,
       "rootDirectory": "./"
     },
     "auth": {

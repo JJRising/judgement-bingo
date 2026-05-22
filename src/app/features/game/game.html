@@ -1,0 +1,16 @@
+<div class="game-page">
+    <header class="game-header">
+        <h1>Game {{ gameId() }}</h1>
+        <nav class="game-nav">
+            <a [routerLink]="['admin']" routerLinkActive="active">Admin</a>
+        </nav>
+    </header>
+
+    <section class="game-body">
+        <p>Game placeholder content for id {{ gameId() }}.</p>
+    </section>
+
+    <section class="game-outlet">
+        <router-outlet />
+    </section>
+</div>

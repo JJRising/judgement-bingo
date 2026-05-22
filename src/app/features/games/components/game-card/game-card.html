@@ -1,0 +1,13 @@
+<a [routerLink]="['/game', game.id]" class="card-link">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>{{ game.name }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="game-card-content">
+            <p class="description">{{ game.description }}</p>
+            <p class="dates">
+                {{ game.sessionStartDate | date: 'mediumDate' }} – {{ game.sessionEndDate | date: 'mediumDate' }}
+            </p>
+        </mat-card-content>
+    </mat-card>
+</a>

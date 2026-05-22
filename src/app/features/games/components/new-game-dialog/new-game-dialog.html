@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>New Game</h2>
+
+<mat-dialog-content class="game-form">
+    <mat-form-field appearance="outline">
+        <mat-label>Game Name</mat-label>
+        <input matInput [formControl]="form.controls.name" />
+        <mat-error>Name is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <textarea matInput [formControl]="form.controls.description" rows="3"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Session Dates</mat-label>
+        <mat-date-range-input [rangePicker]="sessionPicker" [formGroup]="form.controls.sessionDates">
+            <input matStartDate formControlName="sessionStartDate" placeholder="Start date" />
+            <input matEndDate formControlName="sessionEndDate" placeholder="End date" />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="sessionPicker" />
+        <mat-date-range-picker #sessionPicker />
+        @if (form.controls.sessionDates.controls.sessionStartDate.hasError('required')) {
+            <mat-error>Session start date is required</mat-error>
+        }
+        @if (form.controls.sessionDates.controls.sessionEndDate.hasError('required')) {
+            <mat-error>Session end date is required</mat-error>
+        }
+    </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()">Create</button>
+</mat-dialog-actions>

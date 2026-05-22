@@ -26,7 +26,8 @@ replay_pid*
 backend/.gradle
 backend/build
 /.angular/
-/node_modules
+/node_modules/
+/dist/
 
 # IDE
 .idea

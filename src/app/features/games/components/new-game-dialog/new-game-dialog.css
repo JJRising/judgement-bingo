@@ -1,0 +1,10 @@
+mat-dialog-content.game-form {
+    display: flex;
+    flex-direction: column;
+    padding-top: 8px !important; /* The text on the field input will be cut off without this padding */
+}
+
+mat-form-field {
+    width: 560px;
+    max-width: 100%;
+}

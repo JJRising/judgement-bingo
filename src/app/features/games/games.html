@@ -1,0 +1,26 @@
+<div class="games-page">
+    <div class="games-toolbar">
+        <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search games</mat-label>
+            <input
+                    matInput
+                    [ngModel]="searchQuery()"
+                    (ngModelChange)="onSearchChange($event)"
+            placeholder="Search by name..."
+            />
+            <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+        <button matFab extended (click)="openNewGameDialog()">
+            <mat-icon>add</mat-icon>
+            New Game
+        </button>
+    </div>
+    <div class="games-grid">
+        @for (game of filteredGames(); track game.id) {
+            <app-game-card [game]="game"/>
+        } @empty {
+            <!-- TODO: design an empty state — no games yet vs no search results are different states -->
+            <p class="empty-state">No games found.</p>
+        }
+    </div>
+</div>

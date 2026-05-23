@@ -16,6 +16,18 @@ export const routes: Routes = [
         canActivate: [authGuard],
         children: [
             {
+                path: '',
+                loadComponent: () => import('@features/game/pages/overview/overview').then(m => m.Overview),
+            },
+            {
+                path: 'prompts',
+                loadComponent: () => import('@features/game/pages/prompts/prompts').then(m => m.Prompts),
+            },
+            {
+                path: 'card',
+                loadComponent: () => import('@features/game/pages/card/card').then(m => m.Card),
+            },
+            {
                 path: 'admin',
                 loadComponent: () => import('@features/game/pages/admin/admin').then(m => m.Admin),
             },

@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-admin',
+  selector: 'app-card',
   imports: [],
   templateUrl: './card.html',
   styleUrl: './card.css',
 })
-export class Admin {}
+export class Card {}

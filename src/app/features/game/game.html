@@ -1,16 +1,54 @@
-<div class="game-page">
-    <header class="game-header">
-        <h1>Game {{ gameId() }}</h1>
-        <nav class="game-nav">
-            <a [routerLink]="['admin']" routerLinkActive="active">Admin</a>
-        </nav>
-    </header>
+<mat-sidenav-container>
+  <mat-sidenav opened mode="side"
+    [style.width]="collapsed() ? '64px' : '240px'">
 
-    <section class="game-body">
-        <p>Game placeholder content for id {{ gameId() }}.</p>
-    </section>
+    <div class="sidenav-title">
+      @if (!collapsed()) {
+        <span class="title-text">Judgement Bingo</span>
+      }
+      <button mat-icon-button (click)="collapsed.set(!collapsed())">
+        <mat-icon>{{ collapsed() ? 'menu' : 'menu_open' }}</mat-icon>
+      </button>
+    </div>
 
-    <section class="game-outlet">
-        <router-outlet />
-    </section>
-</div>
+    <mat-nav-list>
+      <a mat-list-item [routerLink]="['/games']">
+        <mat-icon matListItemIcon>arrow_back</mat-icon>
+        @if (!collapsed()) {
+          <span matListItemTitle>Back to games list</span>
+        }
+      </a>
+
+      <mat-divider />
+
+      <a mat-list-item class="sidenav-item" [routerLink]="['/games', gameId()]" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <mat-icon matListItemIcon>info</mat-icon>
+        @if (!collapsed()) {
+          <span matListItemTitle>Overview</span>
+        }
+      </a>
+      <a mat-list-item class="sidenav-item" [routerLink]="['/games', gameId(), 'prompts']" routerLinkActive="active">
+        <mat-icon matListItemIcon>chat</mat-icon>
+        @if (!collapsed()) {
+          <span matListItemTitle>Prompts</span>
+        }
+      </a>
+      <a mat-list-item class="sidenav-item" [routerLink]="['/games', gameId(), 'card']" routerLinkActive="active">
+        <mat-icon matListItemIcon>grid_on</mat-icon>
+        @if (!collapsed()) {
+          <span matListItemTitle>Card</span>
+        }
+      </a>
+      <a mat-list-item class="sidenav-item" [routerLink]="['/games', gameId(), 'admin']" routerLinkActive="active">
+        <mat-icon matListItemIcon>settings</mat-icon>
+        @if (!collapsed()) {
+          <span matListItemTitle>Admin</span>
+        }
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <router-outlet />
+  </mat-sidenav-content>
+</mat-sidenav-container>

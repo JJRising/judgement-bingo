@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { AUTH } from '../app.config';
 import {
     signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
     User,

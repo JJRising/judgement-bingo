@@ -60,7 +60,7 @@ export class Games {
         const ref = this.dialog.open(NewGameDialog);
         ref.afterClosed().subscribe(result => {
             if (result) {
-                this.gamesService.createGame(result);
+                void this.gamesService.createGame(result);
             }
         });
     }

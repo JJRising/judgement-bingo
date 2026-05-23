@@ -1,4 +1,27 @@
 <div class="admin-page">
-    <h2>Admin</h2>
-    <p>Admin placeholder content.</p>
+  <div class="admin-header">
+    <h2>Players</h2>
+    <button mat-raised-button color="primary" (click)="openAddPlayerDialog()">
+      <mat-icon>person_add</mat-icon>
+      Add Player
+    </button>
+  </div>
+
+  @if (players().length === 0) {
+    <p class="empty-message">No players added yet.</p>
+  } @else {
+    <mat-list>
+      @for (player of players(); track player.id) {
+        <mat-list-item>
+          <span matListItemTitle>{{ getMemberName(player.memberId) }}</span>
+          <span matListItemLine>{{ player.status }}</span>
+          @if (player.status !== 'kicked') {
+            <button matIconButton matListItemMeta (click)="kickPlayer(player.id)">
+              <mat-icon>person_remove</mat-icon>
+            </button>
+          }
+        </mat-list-item>
+      }
+    </mat-list>
+  }
 </div>

@@ -57,10 +57,13 @@ export class Games {
     }
 
     openNewGameDialog() {
+        const uid = this.authService.currentUser?.uid;
+        if (!uid) return;
+
         const ref = this.dialog.open(NewGameDialog);
         ref.afterClosed().subscribe(result => {
             if (result) {
-                void this.gamesService.createGame(result);
+                void this.gamesService.createGame({...result, ownerId: uid});
             }
         });
     }

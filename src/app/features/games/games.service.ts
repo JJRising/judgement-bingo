@@ -1,10 +1,11 @@
 import {inject, Injectable} from '@angular/core';
 import {FIRESTORE} from '../../app.config';
-import {addDoc, collection, onSnapshot, orderBy, query, Timestamp, where,} from 'firebase/firestore';
+import {addDoc, collection, doc, onSnapshot, orderBy, query, setDoc, Timestamp, where,} from 'firebase/firestore';
 import {GameModel} from '@shared/models';
 import {Observable} from 'rxjs';
 
 const COLLECTION = 'games';
+const PLAYERS_SUBCOLLECTION = 'players';
 
 function toModel(doc: {id: unknown; data: () => Record<string, unknown>}): GameModel {
     const d = doc.data();
@@ -12,6 +13,7 @@ function toModel(doc: {id: unknown; data: () => Record<string, unknown>}): GameM
         id: doc.id as number,
         name: d['name'] as string,
         description: d['description'] as string,
+        ownerId: d['ownerId'] as string,
         createdAt: (d['createdAt'] as Timestamp)?.toDate() ?? new Date(),
         sessionStartDate: (d['sessionStartDate'] as Timestamp)?.toDate() ?? new Date(),
         sessionEndDate: (d['sessionEndDate'] as Timestamp)?.toDate() ?? new Date(),
@@ -52,6 +54,17 @@ export class GamesService {
             sessionStartDate: Timestamp.fromDate(game.sessionStartDate),
             sessionEndDate: Timestamp.fromDate(game.sessionEndDate),
         });
+
+        // Add the owner as the first player
+        const playerRef = doc(this.firestore, COLLECTION, docRef.id, PLAYERS_SUBCOLLECTION, game.ownerId);
+        await setDoc(playerRef, {
+            memberId: game.ownerId,
+            gameId: docRef.id,
+            status: 'active',
+            joinedAt: Timestamp.fromDate(new Date()),
+            invitedBy: game.ownerId,
+        });
+
         return docRef.id;
     }
 }

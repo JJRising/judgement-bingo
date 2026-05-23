@@ -24,8 +24,15 @@
                 <mat-error>{{ error }}</mat-error>
             }
             <div class="login-actions">
-                <button mat-raised-button color="primary" type="submit">Sign In</button>
+                <button class="login-button" matButton="filled" color="primary" type="submit">Sign In</button>
             </div>
         </form>
+        <div class="login-divider">
+            <span>or</span>
+        </div>
+        <button class="login-button" matButton="outlined" color="primary" type="button" (click)="signInWithGoogle()">
+            <mat-icon svgIcon="google"></mat-icon>
+            Continue with Google
+        </button>
     </mat-card-content>
 </mat-card>

@@ -1,3 +1,9 @@
+mat-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
 .login-card {
     max-width: 400px;
     margin: 80px auto 0;
@@ -13,4 +19,29 @@
     display: flex;
     justify-content: flex-end;
     margin-top: 8px;
+}
+
+.login-button {
+    width: 100%;
+}
+
+.login-divider {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.login-divider span {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 16px;
+}
+
+.login-divider span::before,
+.login-divider span::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.12);
 }

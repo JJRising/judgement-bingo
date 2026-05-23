@@ -1,4 +1,5 @@
 import {Component, computed, inject, signal} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
 import {MatFormField, MatInput, MatLabel} from "@angular/material/input";
 import {MatIcon} from "@angular/material/icon";
 import {GameCard} from "@features/games/components/game-card/game-card";
@@ -34,6 +35,7 @@ export class Games {
     private readonly router = inject(Router);
 
     games = signal<GameModel[]>([]);
+    isAdmin = toSignal(this.authService.isAdmin$, { initialValue: false });
 
     searchQuery = signal('');
 

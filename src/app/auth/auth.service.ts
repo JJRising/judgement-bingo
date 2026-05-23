@@ -9,7 +9,8 @@ import {
     GoogleAuthProvider,
     signInWithPopup,
 } from 'firebase/auth';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -18,6 +19,10 @@ export class AuthService {
     readonly user$: Observable<User | null> = new Observable(subscriber => {
         return onAuthStateChanged(this.auth, subscriber);
     });
+
+    readonly isAdmin$: Observable<boolean> = this.user$.pipe(
+        switchMap(user => user ? user.getIdTokenResult().then(token => token.claims['role'] === 'admin') : of(false))
+    );
 
     get currentUser(): User | null {
         return this.auth.currentUser;

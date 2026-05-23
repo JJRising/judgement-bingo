@@ -8,6 +8,9 @@ import {MatFabButton} from "@angular/material/button";
 import {MatDialog} from "@angular/material/dialog";
 import {NewGameDialog} from "@features/games/components/new-game-dialog/new-game-dialog";
 import {GamesService} from "@features/games/games.service";
+import {Router} from "@angular/router";
+import {PageHeader} from "@shared/components/page-header/page-header";
+import {AuthService} from "../../auth/auth.service";
 
 @Component({
   selector: 'app-games',
@@ -18,7 +21,8 @@ import {GamesService} from "@features/games/games.service";
         GameCard,
         FormsModule,
         MatInput,
-        MatFabButton
+        MatFabButton,
+        PageHeader
     ],
   templateUrl: './games.html',
   styleUrl: './games.css',
@@ -26,6 +30,8 @@ import {GamesService} from "@features/games/games.service";
 export class Games {
     private readonly dialog = inject(MatDialog);
     private readonly gamesService = inject(GamesService);
+    private readonly authService = inject(AuthService);
+    private readonly router = inject(Router);
 
     games = signal<GameModel[]>([]);
 
@@ -55,5 +61,9 @@ export class Games {
                 this.gamesService.createGame(result);
             }
         });
+    }
+
+    onLogout() {
+        this.authService.signOut().then(() => this.router.navigate(['/login']));
     }
 }

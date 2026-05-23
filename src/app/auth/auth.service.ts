@@ -31,10 +31,6 @@ export class AuthService {
         return signInWithEmailAndPassword(this.auth, email, password);
     }
 
-    signUpWithEmail(email: string, password: string) {
-        return createUserWithEmailAndPassword(this.auth, email, password);
-    }
-
     signInWithGoogle() {
         return signInWithPopup(this.auth, new GoogleAuthProvider());
     }

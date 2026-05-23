@@ -1,9 +1,9 @@
 import {Routes} from '@angular/router';
 import {authGuard} from "./auth/auth.guard";
-import {LoginComponent} from "./auth/login.component";
+import {Login} from "./auth/login/login";
 
 export const routes: Routes = [
-    {path: 'login', component: LoginComponent},
+    {path: 'login', component: Login},
     {path: '', redirectTo: 'games', pathMatch: 'full'},
     {
         path: 'games',

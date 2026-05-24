@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {FIRESTORE} from '../../app.config';
-import {addDoc, collection, doc, onSnapshot, orderBy, query, setDoc, Timestamp, where,} from 'firebase/firestore';
+import {addDoc, collection, doc, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc, where,} from 'firebase/firestore';
 import {GameModel} from '@shared/models';
 import {Observable} from 'rxjs';
 
@@ -55,6 +55,15 @@ export class GamesService {
             return onSnapshot(q, snap => {
                 subscriber.next(snap.docs.map(toModel));
             }, err => subscriber.error(err));
+        });
+    }
+
+    async updateGame(id: string, updates: Pick<GameModel, 'name' | 'sessionStartDate' | 'sessionEndDate'>): Promise<void> {
+        const ref = doc(this.firestore, COLLECTION, id);
+        await updateDoc(ref, {
+            name: updates.name,
+            sessionStartDate: Timestamp.fromDate(updates.sessionStartDate),
+            sessionEndDate: Timestamp.fromDate(updates.sessionEndDate),
         });
     }
 

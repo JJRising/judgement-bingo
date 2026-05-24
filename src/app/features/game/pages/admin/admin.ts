@@ -1,10 +1,11 @@
 import {Component, inject, signal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
+import {GameDetails} from './game-details/game-details';
 import {PlayerList} from './player-list/player-list';
 
 @Component({
   selector: 'app-admin',
-  imports: [PlayerList],
+  imports: [GameDetails, PlayerList],
   templateUrl: './admin.html',
   styleUrl: './admin.css',
 })

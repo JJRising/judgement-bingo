@@ -1,0 +1,31 @@
+<div class="game-details-section">
+  <div class="game-details-header">
+    <h2>Game Details</h2>
+  </div>
+
+  <form class="game-form" [formGroup]="form" (ngSubmit)="onSave()">
+    <mat-form-field appearance="outline">
+      <mat-label>Game Name</mat-label>
+      <input matInput formControlName="name" />
+      <mat-error>Name is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Session Dates</mat-label>
+      <mat-date-range-input [rangePicker]="sessionPicker" [formGroup]="form.controls.sessionDates">
+        <input matStartDate formControlName="sessionStartDate" placeholder="Start date" />
+        <input matEndDate formControlName="sessionEndDate" placeholder="End date" />
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="sessionPicker" />
+      <mat-date-range-picker #sessionPicker />
+      @if (form.controls.sessionDates.controls.sessionStartDate.hasError('required')) {
+        <mat-error>Session start date is required</mat-error>
+      }
+      @if (form.controls.sessionDates.controls.sessionEndDate.hasError('required')) {
+        <mat-error>Session end date is required</mat-error>
+      }
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Save</button>
+  </form>
+</div>

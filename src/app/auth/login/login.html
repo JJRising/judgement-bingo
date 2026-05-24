@@ -20,8 +20,8 @@
                     <mat-error>Password is required</mat-error>
                 }
             </mat-form-field>
-            @if (error) {
-                <mat-error>{{ error }}</mat-error>
+            @if (error()) {
+                <mat-error class="login-error">{{ error() }}</mat-error>
             }
             <div class="login-actions">
                 <button class="login-button" matButton="filled" color="primary" type="submit">Sign In</button>

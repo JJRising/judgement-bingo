@@ -2,21 +2,32 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isMember() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/members/$(request.auth.uid))
+        && get(/databases/$(database)/documents/members/$(request.auth.uid)).data.status != 'disabled';
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.role == 'admin';
+    }
+
     match /members/{memberId} {
-      allow read: if request.auth != null;
-      // Client writes restricted; admin actions go through Cloud Functions (admin SDK bypasses rules).
-      // Allow during local dev so the seed script works against emulators.
-      allow write: if true;
+      allow read: if isMember();
+      allow write: if isAdmin();
     }
 
     match /games/{gameId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null && request.auth.token.role == "admin";
-      allow update, delete: if request.auth != null && request.auth.token.role == "admin";
+      allow read: if isMember();
+      allow create, update, delete: if isAdmin();
 
       match /players/{playerId} {
-        allow read: if request.auth != null;
-        allow write: if request.auth != null && request.auth.token.role == "admin";
+        allow read: if isMember();
+        allow write: if isAdmin();
       }
     }
   }

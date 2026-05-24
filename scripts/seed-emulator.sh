@@ -15,7 +15,7 @@ PROJECT_ID="judgement-bingo"
 
 # --- Configurable defaults (override via env vars) ---
 EMAIL="${SEED_EMAIL:-admin@example.com}"
-PASSWORD="${SEED_PASSWORD:-password123}"
+PASSWORD="${SEED_PASSWORD:-password1234}"
 DISPLAY_NAME="${SEED_DISPLAY_NAME:-Admin}"
 
 echo "→ Seeding emulator for project: $PROJECT_ID"
@@ -82,6 +82,7 @@ NOW=$(python3 -c "import datetime; print(datetime.datetime.now(datetime.UTC).str
 MEMBER_RESPONSE=$(curl -s -X PATCH \
   "${FIRESTORE_HOST}/v1/projects/${PROJECT_ID}/databases/(default)/documents/members/${USER_ID}?updateMask.fieldPaths=email&updateMask.fieldPaths=displayName&updateMask.fieldPaths=role&updateMask.fieldPaths=status&updateMask.fieldPaths=invitedBy&updateMask.fieldPaths=invitedAt" \
   -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer owner' \
   -d "{
     \"fields\": {
       \"email\":        {\"stringValue\": \"${EMAIL}\"},

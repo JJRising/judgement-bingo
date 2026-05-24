@@ -28,6 +28,8 @@ backend/build
 /.angular/
 /node_modules/
 /dist/
+/functions/node_modules/
+/functions/lib/
 
 # IDE
 .idea

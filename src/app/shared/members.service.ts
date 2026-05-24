@@ -1,5 +1,5 @@
 import {inject, Injectable} from '@angular/core';
-import {FIRESTORE} from '../app.config';
+import {FIRESTORE, FUNCTIONS} from '../app.config';
 import {
   collection,
   doc,
@@ -9,8 +9,19 @@ import {
   Timestamp,
   updateDoc,
 } from 'firebase/firestore';
-import {Member} from '@shared/models';
+import {httpsCallable} from 'firebase/functions';
+import {Member, MemberRole} from '@shared/models';
 import {Observable} from 'rxjs';
+
+export interface InviteMemberInput {
+  email: string;
+  displayName: string;
+  role: MemberRole;
+}
+
+export interface InviteMemberResult {
+  memberId: string;
+}
 
 const COLLECTION = 'members';
 
@@ -30,7 +41,17 @@ function toModel(d: {id: string; data: () => Record<string, unknown>}): Member {
 @Injectable({providedIn: 'root'})
 export class MembersService {
   private readonly firestore = inject(FIRESTORE) as Firestore;
+  private readonly functions = inject(FUNCTIONS);
   private readonly collectionRef = collection(this.firestore, COLLECTION);
+
+  async invite(input: InviteMemberInput): Promise<InviteMemberResult> {
+    const callable = httpsCallable<InviteMemberInput, InviteMemberResult>(
+      this.functions,
+      'inviteMember',
+    );
+    const {data} = await callable(input);
+    return data;
+  }
 
   getMembers(): Observable<Member[]> {
     return new Observable(subscriber => {

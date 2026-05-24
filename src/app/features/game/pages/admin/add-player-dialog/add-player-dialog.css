@@ -1,0 +1,57 @@
+
+:host {
+    display: block;
+}
+
+.viewport {
+    overflow: hidden;
+    width: 100%;
+}
+
+.slider {
+    display: flex;
+    width: 200%;
+    transform: translateX(0);
+    transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slider.show-invite {
+    transform: translateX(-50%);
+}
+
+.pane {
+    flex: 0 0 50%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.pane-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 16px 24px 0;
+}
+
+.pane-header h2 {
+    margin: 0;
+    flex: 1;
+}
+
+.invite-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 8px;
+}
+
+.invite-form mat-form-field {
+    width: 100%;
+}
+
+.invite-error {
+    color: var(--mat-sys-error, #b00020);
+    margin: 0;
+    font-size: 0.875rem;
+}

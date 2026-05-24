@@ -1,15 +1,8 @@
-.admin-page {
+.admin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 16px;
     padding: 16px;
-}
-
-.admin-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-}
-
-.empty-message {
-    color: rgba(0, 0, 0, 0.54);
-    font-style: italic;
+    height: 100%;
 }

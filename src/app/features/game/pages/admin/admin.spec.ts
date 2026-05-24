@@ -28,4 +28,8 @@ describe('Admin', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should set gameId from route params', () => {
+    expect(component.gameId()).toBe('test-game-id');
+  });
 });

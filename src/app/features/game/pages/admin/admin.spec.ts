@@ -14,7 +14,7 @@ describe('Admin', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            paramMap: of({ get: (key: string) => 'test-game-id' }),
+            paramMap: of({ get: () => 'test-game-id' }),
           },
         },
       ],

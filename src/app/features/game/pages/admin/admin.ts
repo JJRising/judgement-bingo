@@ -1,4 +1,4 @@
-import {Component, inject, signal, effect} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {PlayerList} from './player-list/player-list';
 
@@ -17,7 +17,7 @@ export class Admin {
     // :id is defined on the parent route (games/:id), not on this child (admin)
     this.route.parent!.paramMap.subscribe({
       next: params => {
-        const id = params.get('id')!;
+        const id = params.get()!;
         this.gameId.set(id);
       },
     });

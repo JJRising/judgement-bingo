@@ -45,14 +45,14 @@ export class PlayerList {
 
     ref.afterClosed().subscribe((memberId: string | undefined) => {
       if (memberId && this.gameId()) {
-        this.playersService.addPlayer(this.gameId(), memberId, memberId);
+        void this.playersService.addPlayer(this.gameId(), memberId, memberId);
       }
     });
   }
 
   kickPlayer(playerId: string): void {
     if (this.gameId()) {
-      this.playersService.kickPlayer(this.gameId(), playerId);
+      void this.playersService.kickPlayer(this.gameId(), playerId);
     }
   }
 

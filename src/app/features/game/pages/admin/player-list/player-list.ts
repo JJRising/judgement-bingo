@@ -1,7 +1,8 @@
-import {Component, inject, input, signal, effect} from '@angular/core';
+import {Component, inject, input, signal, computed, effect} from '@angular/core';
 import {Player, Member} from '@shared/models';
 import {PlayersService} from '../admin.service';
 import {MembersService} from '@shared/members.service';
+import {GamesService} from '@features/games/games.service';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
@@ -17,11 +18,15 @@ import {AddPlayerDialog, AddPlayerDialogData} from '../add-player-dialog/add-pla
 export class PlayerList {
   private readonly playersService = inject(PlayersService);
   private readonly membersService = inject(MembersService);
+  private readonly gamesService = inject(GamesService);
   private readonly dialog = inject(MatDialog);
 
   readonly gameId = input.required<string>();
   readonly players = signal<Player[]>([]);
   readonly members = signal<Member[]>([]);
+  readonly ownerId = signal<string>('');
+
+  readonly isOwner = computed(() => (memberId: string) => memberId === this.ownerId());
 
   constructor() {
     this.membersService.getMembers().subscribe(m => this.members.set(m));
@@ -30,6 +35,7 @@ export class PlayerList {
       const id = this.gameId();
       if (id) {
         this.playersService.getPlayers(id).subscribe(p => this.players.set(p));
+        this.gamesService.getGame(id).subscribe(g => this.ownerId.set(g.ownerId));
       }
     });
   }

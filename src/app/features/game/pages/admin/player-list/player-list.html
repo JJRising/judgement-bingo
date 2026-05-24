@@ -15,7 +15,9 @@
         <mat-list-item>
           <span matListItemTitle>{{ getMemberName(player.memberId) }}</span>
           <span matListItemLine>{{ player.status }}</span>
-          @if (player.status !== 'kicked') {
+          @if (isOwner()(player.memberId)) {
+            <span matListItemMeta class="owner-label">(owner)</span>
+          } @else if (player.status !== 'kicked') {
             <button matIconButton matListItemMeta (click)="kickPlayer(player.id)">
               <mat-icon>person_remove</mat-icon>
             </button>

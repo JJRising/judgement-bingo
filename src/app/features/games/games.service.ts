@@ -25,6 +25,17 @@ export class GamesService {
     private readonly firestore = inject(FIRESTORE);
     private readonly collectionRef = collection(this.firestore, COLLECTION);
 
+    getGame(id: string): Observable<GameModel> {
+        const ref = doc(this.firestore, COLLECTION, id);
+        return new Observable(subscriber => {
+            return onSnapshot(ref, snap => {
+                if (snap.exists()) {
+                    subscriber.next(toModel(snap as unknown as {id: unknown; data: () => Record<string, unknown>}));
+                }
+            }, err => subscriber.error(err));
+        });
+    }
+
     getGames(): Observable<GameModel[]> {
         return new Observable(subscriber => {
             return onSnapshot(this.collectionRef, snap => {

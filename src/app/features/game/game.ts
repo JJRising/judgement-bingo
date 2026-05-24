@@ -17,7 +17,7 @@ export class Game {
     private readonly route = inject(ActivatedRoute);
     private readonly container = viewChild.required(MatSidenavContainer);
 
-    readonly gameId = toSignal(this.route.paramMap.pipe(map(params => params.get())));
+    readonly gameId = toSignal(this.route.paramMap.pipe(map(params => params.get('id'))));
     readonly collapsed = signal(false);
 
     toggleCollapsed(): void {

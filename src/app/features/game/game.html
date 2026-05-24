@@ -6,7 +6,7 @@
       @if (!collapsed()) {
         <span class="title-text">Judgement Bingo</span>
       }
-      <button mat-icon-button (click)="collapsed.set(!collapsed())">
+      <button mat-icon-button (click)="toggleCollapsed()">
         <mat-icon>{{ collapsed() ? 'menu' : 'menu_open' }}</mat-icon>
       </button>
     </div>
@@ -49,6 +49,8 @@
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <router-outlet />
+    <div class="main-content">
+      <router-outlet />
+    </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

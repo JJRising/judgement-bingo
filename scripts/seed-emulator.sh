@@ -21,23 +21,27 @@ DISPLAY_NAME="${SEED_DISPLAY_NAME:-Admin}"
 echo "→ Seeding emulator for project: $PROJECT_ID"
 echo "  Email: $EMAIL  |  Display name: $DISPLAY_NAME"
 
-# 1. Create or look up the Auth user via the emulator REST API.
-#    Try signUp first; if the email already exists, fall back to signIn to get the uid.
+# 1. Create or look up the Auth user via the emulator admin REST API.
+#    Uses the project-scoped accounts:create endpoint with "Bearer owner" which
+#    bypasses blocking functions — needed because on a fresh emulator no member
+#    doc exists yet, so the public signUp endpoint would be rejected by
+#    beforeUserCreated.
 AUTH_RESPONSE=$(curl -s -X POST \
   "${AUTH_HOST}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=any" \
   -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer owner' \
   -d "{
     \"email\": \"${EMAIL}\",
     \"password\": \"${PASSWORD}\",
     \"displayName\": \"${DISPLAY_NAME}\",
-    \"returnSecureToken\": true
+    \"emailVerified\": true
   }")
 
 USER_ID=$(echo "$AUTH_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('localId',''))")
 
 if [ -z "$USER_ID" ]; then
-  # User already exists — sign in to retrieve the uid
-  AUTH_RESPONSE=$(curl -s -X POST \
+  # Account may already exist — look it up by email
+  LOOKUP_RESPONSE=$(curl -s -X POST \
     "${AUTH_HOST}/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=any" \
     -H 'Content-Type: application/json' \
     -d "{
@@ -46,7 +50,8 @@ if [ -z "$USER_ID" ]; then
       \"returnSecureToken\": true
     }")
 
-  USER_ID=$(echo "$AUTH_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('localId',''))")
+  USER_ID=$(echo "$LOOKUP_RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('localId',''))")
+  AUTH_RESPONSE="$LOOKUP_RESPONSE"
 fi
 
 if [ -z "$USER_ID" ]; then

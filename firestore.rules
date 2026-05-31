@@ -29,6 +29,11 @@ service cloud.firestore {
         allow read: if isMember();
         allow write: if isAdmin();
       }
+
+      match /subjects/{subjectId} {
+        allow read: if isMember();
+        allow write: if isAdmin();
+      }
     }
   }
 }

@@ -1,0 +1,24 @@
+<div class="subject-list-section">
+  <div class="subject-list-header">
+    <h2>Subjects</h2>
+    <button mat-raised-button color="primary" (click)="openAddSubjectDialog()">
+      <mat-icon>person_add</mat-icon>
+      Add Subject
+    </button>
+  </div>
+
+  @if (subjects().length === 0) {
+    <p class="empty-message">No subjects added yet.</p>
+  } @else {
+    <mat-list>
+      @for (subject of subjects(); track subject.id) {
+        <mat-list-item>
+          <span matListItemTitle>{{ subject.name }}</span>
+          <button matIconButton matListItemMeta (click)="removeSubject(subject.id)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-list-item>
+      }
+    </mat-list>
+  }
+</div>
